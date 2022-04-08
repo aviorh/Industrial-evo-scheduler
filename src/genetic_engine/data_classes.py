@@ -7,11 +7,12 @@ class Base:
     pass
 
 
+@dataclass
 class ProductionLine(Base):
     id: int
     product_ids: Dict[int, int]  # bulk product id to capacity (kg/hour) per product. might need packaging capacity
     manpower: int
-    setup_time: float
+    setup_time: int  # time to setup the production line once per day of work
     ffo: int
 
 
@@ -20,7 +21,7 @@ class BulkProduct(Base):
     """Bissli Grill"""
     id: int
     recipe_id: int
-    cleaning_time: float
+    transition_time: int  # when transitioning between different HALBs.
     production_line_ids: List[int]  # production lines that can produce this bulk product
 
 
