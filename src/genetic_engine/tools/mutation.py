@@ -21,8 +21,6 @@ def mutFlipBit(individual, indpb):
 
     while mutating the solution we also make sure it is still valid.
     """
-    # individual = individual.view(dtype=np.ndarray)
-
     x, y, z = individual.shape
     for i, j, k in np.ndindex(x, y, z):
         if random.random() < indpb:
@@ -32,10 +30,5 @@ def mutFlipBit(individual, indpb):
                 if index_of_one[0] != j:
                     individual[i, index_of_one, k] = 0
             individual[i, j, k] = type(individual[i, j, k])(not individual[i, j, k])
-
-    # individual = creator.Individual(individual)
-    for i, k in np.ndindex(x, z):
-        if individual[i,:,k].sum() > 1:
-            raise KeyError("shit!!!!")
 
     return individual,

@@ -162,12 +162,6 @@ class EAEngine:
         individual = np.moveaxis(individual, 1, 2)  # align dimensions to expected
 
         individual = individual[:, :-1, :]  # remove last extra layer that was used for concat only
-
-        # for debugging
-        for i, k in np.ndindex(num_product_lines, num_hours):
-            if individual[i,:,k].sum() > 1:
-                raise KeyError("shit!!!!")
-
         return creator.Individual(individual)
 
     def run(self, population_size, num_generations, crossover_probability, mutation_probability, verbose=__debug__):
