@@ -11,7 +11,7 @@ import seaborn as sns
 # problem constants:
 SOFT_CONSTRAINT_PENALTY = 1
 HARD_CONSTRAINT_PENALTY = 10  # the penalty factor for a hard-constraint violation
-INVALID_SCHEDULING_PENALTY = 20
+INVALID_SCHEDULING_PENALTY = 100
 
 # Genetic Algorithm constants:
 POPULATION_SIZE = 300

@@ -44,7 +44,7 @@ class EAEngine:
         self._prepare_genetic_operators()
 
         self.constraints_manager = ConstraintsManager(site_manager=self.site_manager,
-                                                      invalid_scheduling_penalty=1,  # INVALID_SCHEDULING_PENALTY,
+                                                      invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,  # INVALID_SCHEDULING_PENALTY,
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
                                                       soft_constraints_penalty=SOFT_CONSTRAINT_PENALTY)
 
@@ -65,11 +65,13 @@ class EAEngine:
 
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
         logger.info("in fitness calc")
-        overlaying_manufacturing = self.constraints_manager.count_overlaying_manufacturing(schedule=individual)
         production_line_halb_compliance = self.constraints_manager.production_line_halb_compliance(schedule=individual)
-        invalid_scheduling_violations = overlaying_manufacturing + production_line_halb_compliance # sum all invalid violations
-        hard_constraints_violations = 0  # sum all hard rules
-        soft_constraints_violations = 0  # sum all soft rules
+        forecast_compliance = self.constraints_manager.forecast_compliance(schedule=individual)
+        sufficient_packaging_material = self.constraints_manager.sufficient_packaging_material(schedule=individual)
+        ensure_minimal_transition_time = self.constraints_manager.ensure_minimal_transition_time(schedule=individual)
+        invalid_scheduling_violations = production_line_halb_compliance  # sum all invalid violations
+        hard_constraints_violations = forecast_compliance + ensure_minimal_transition_time  # sum all hard rules
+        soft_constraints_violations = sufficient_packaging_material  # sum all soft rules
 
         return self.constraints_manager.invalid_scheduling_penalty * invalid_scheduling_violations + \
                self.constraints_manager.hard_constraints_penalty * hard_constraints_violations + \

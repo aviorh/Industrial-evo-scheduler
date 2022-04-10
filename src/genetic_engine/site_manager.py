@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import numpy as np
 
@@ -8,7 +8,7 @@ from src.genetic_engine.data_classes import ProductionLine, Product, BulkProduct
 class SiteManager:
     def __init__(self, production_lines: List[ProductionLine], products: List[Product], bulk_products: List[BulkProduct],
                  total_working_hours, num_shifts, shift_duration, manpower_per_production_line: Dict[int, int], recipes: Dict[int, Dict],
-                 product_packaging_unit: Dict[int, int], retailer_packaging_unit: Dict[int, int]):
+                 product_packaging_unit: Dict[int, int], retailer_packaging_unit: Dict[int, Tuple[int, int]]):
         """
 
         :param production_lines: list of production lines
@@ -18,7 +18,7 @@ class SiteManager:
         :param manpower_per_production_line: production-line-id -> manpower needed to operate
         :param recipes: recipe-id -> dictionary containing all ingredients and quantities
         :param product_packaging_unit: package id -> quantity. ex: Bissli Grill 100g unit package
-        :param retailer_packaging_unit: packagge id -> quantity. ex: Cardboard-box Bissli Grill 100g 1 unit package
+        :param retailer_packaging_unit: packagge id -> (quantity, num units per retailer package). ex: Cardboard-box Bissli Grill 100g 1 unit package
         """
         self.production_lines = production_lines
         self.products = products

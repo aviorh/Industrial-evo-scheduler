@@ -1,4 +1,7 @@
 import logging
+import math
+from typing import List
+
 import numpy as np
 
 from src.genetic_engine.site_manager import SiteManager
@@ -16,6 +19,89 @@ class ConstraintsManager:
         self.num_production_lines = len(self.site_manager.production_lines)
         self.num_working_hours = self.site_manager.total_working_hours
         self.num_products = len(self.site_manager.products)
+
+    def sufficient_packaging_material(self, schedule):
+        current_amounts = self._get_produced_amount_per_product(schedule)
+        unit_package_weights = [prod.weight for prod in self.site_manager.products]
+        requested_unit_packages = [math.ceil(current_amounts[i] / unit_package_weights[i]) for i in range(self.num_products)]
+
+        amount_units_per_retailer_package = [self.site_manager.retailer_packaging_unit[i][1] for i in self.site_manager.retailer_packaging_unit.keys()]
+
+        requested_retailer_packages = [math.ceil(requested_unit_packages[i] / amount_units_per_retailer_package[i]) for i in range(len(requested_unit_packages))]
+
+        unit_package_ids = [prod.unit_package_id for prod in self.site_manager.products]
+        retailer_package_ids = [prod.retailer_package_id for prod in self.site_manager.products]
+
+        unit_package_amounts = [self.site_manager.product_packaging_unit[i] for i in unit_package_ids]
+        retailer_package_amounts = [self.site_manager.retailer_packaging_unit[i][0] for i in retailer_package_ids]
+
+        missing_unit_amounts_percentage = [((requested_unit_packages[i] / unit_package_amounts[i])*100) - 100
+                                      for i in range(len(requested_unit_packages))]
+
+        missing_retailer_amounts_percentage = [((requested_retailer_packages[i] / retailer_package_amounts[i])*100) - 100
+                                      for i in range(len(retailer_package_amounts))]
+
+        missing_amount_violation = sum(i for i in missing_unit_amounts_percentage if i > 0) + \
+                                   sum(i for i in missing_retailer_amounts_percentage if i > 0)
+        return missing_amount_violation
+
+    def count_total_down_time(self, schedule) -> int:
+        # schedule = schedule.view(dtype=np.ndarray)
+
+        pass
+
+    def enforce_products_priority(self, schedule) -> int:
+        """
+        make sure prioritized products achieve maximum forecast
+        """
+        pass
+
+    def ensure_minimal_transition_time(self, schedule) -> int:
+        """
+        for each production line, promote production sequence of the same product to avoid transition time
+        """
+        # schedule = schedule.view(dtype=np.ndarray)
+        print()
+
+    def forecast_compliance(self, schedule):
+        # fixme: need to take setup time and cleaning time into account
+        # schedule = schedule.view(dtype=np.ndarray)
+        expected_amount = [prod.get_amount_to_produce() for prod in self.site_manager.products]
+        current_amount = self._get_produced_amount_per_product(schedule)
+
+        # calculates the missing/overflow share of % in production, each percentage is a violation point
+        num_violations = sum([abs(100 - (current_amount[i] / expected_amount[i])*100) for i in range(len(expected_amount))])
+        return float(num_violations)
+
+    def _get_produced_amount_per_product(self, schedule) -> List[float]:
+        current_amount = [0 for _ in self.site_manager.products]
+        for i, j in np.ndindex(self.num_production_lines, self.num_products):
+            _sched = schedule[i, j, :]
+
+            # count all 1's sequences * cleaning time and reduce from num_production_hours
+            num_transitions = len(np.diff(np.where(np.concatenate(([_sched[0]], _sched[:-1] != _sched[1:], [1])))[0])[::2])
+            bulk_id = self.site_manager.products[j].bulk_id
+            bulk_transition_time = self.site_manager.bulk_products[bulk_id].transition_time
+            num_production_hours = _sched.sum() - (num_transitions * bulk_transition_time)
+
+            prod_line = self.site_manager.production_lines[i]
+            amount_kg = prod_line.product_ids.get(j, 0) * num_production_hours
+            current_amount[j] += amount_kg
+        return current_amount
+
+    def production_line_halb_compliance(self, schedule):
+        # schedule: np.ndarray = schedule.view(dtype=np.ndarray)
+
+        accepted_products_per_line = [0 for _ in range(self.num_production_lines)]
+        for i, line in enumerate(self.site_manager.production_lines):
+            accepted_products_per_line[i] = list(line.product_ids.keys())
+
+        num_violations = 0
+        for i, j in np.ndindex(self.num_production_lines, self.num_products):
+            if j not in accepted_products_per_line[i]:
+                num_violations += schedule[i, j, :].sum()
+
+        return num_violations
 
     def count_overlaying_manufacturing(self, schedule) -> int:
         """
@@ -42,31 +128,3 @@ class ConstraintsManager:
         return total_invalidations
         """
         return 0
-
-    def count_total_down_time(self, schedule) -> int:
-        schedule = schedule.view(dtype=np.ndarray)
-        pass
-
-    def validate_transition_time(self, schedule) -> int:
-        schedule = schedule.view(dtype=np.ndarray)
-        pass
-
-    def forecast_compliance(self, schedule):
-        schedule = schedule.view(dtype=np.ndarray)
-        pass
-
-    def production_line_halb_compliance(self, schedule):
-        # schedule: np.ndarray = schedule.view(dtype=np.ndarray)
-
-        accepted_products_per_line = [0 for _ in range(self.num_production_lines)]
-        for i, line in enumerate(self.site_manager.production_lines):
-            accepted_products_per_line[i] = list(line.product_ids.keys())
-
-        num_violations = 0
-        for i, j in np.ndindex(self.num_production_lines, self.num_products):
-            if j not in accepted_products_per_line[i]:
-                num_violations += schedule[i, j, :].sum()
-
-        return num_violations
-
-
