@@ -7,6 +7,7 @@ from src.genetic_engine.data_classes import ProductionLine, Product, BulkProduct
 
 class SiteManager:
     def __init__(self, production_lines: List[ProductionLine], products: List[Product], bulk_products: List[BulkProduct],
+                 usual_start_hour: int, usual_end_hour: int,
                  total_working_hours, num_shifts, shift_duration, manpower_per_production_line: Dict[int, int], recipes: Dict[int, Dict],
                  product_packaging_unit: Dict[int, int], retailer_packaging_unit: Dict[int, Tuple[int, int]]):
         """
@@ -14,6 +15,8 @@ class SiteManager:
         :param production_lines: list of production lines
         :param products: list of products
         :param num_shifts: number of shifts per day
+        :param usual_start_hour: usual start hour of the site on a regular day
+        :param usual_end_hour: usual end hour of the site on a regular day
         :param shift_duration:
         :param manpower_per_production_line: production-line-id -> manpower needed to operate
         :param recipes: recipe-id -> dictionary containing all ingredients and quantities
@@ -24,6 +27,8 @@ class SiteManager:
         self.products = products
         self.bulk_products = bulk_products
 
+        self.usual_start_hour = usual_start_hour
+        self.usual_end_hour = usual_end_hour
         self.num_shifts = num_shifts
         self.shift_duration = shift_duration
         self.total_working_hours = total_working_hours

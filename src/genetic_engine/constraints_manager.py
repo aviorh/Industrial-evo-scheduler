@@ -20,7 +20,37 @@ class ConstraintsManager:
         self.num_working_hours = self.site_manager.total_working_hours
         self.num_products = len(self.site_manager.products)
 
+    def count_regular_hours_exceeded_violations(self, schedule) -> int:
+        # fixme: finish
+        line_schedules = self._get_production_line_schedules(schedule)
+        for line_sched in line_schedules:
+            day = 0
+
+
+    def _get_production_line_schedules(self, schedule):
+        # get production line schedule
+        production_line_schedules = []
+        for i in range(self.num_production_lines):
+            for j in range(self.num_products):
+                if j == 0:
+                    prod_line_sched = schedule[i, j, :]
+                else:
+                    prod_line_sched = prod_line_sched | schedule[i, j, :]
+            production_line_schedules.append(prod_line_sched)
+
+        return production_line_schedules
+
+    def count_maximum_product_line_utilization(self, schedule) -> int:
+        """
+        make sure product line is operating as much as possible during regular working hours.
+        check if ANYTHING is produced
+        :param schedule:
+        :return:
+        """
+        pass
+
     def sufficient_packaging_material(self, schedule):
+        # fixme: DivisionByZero exception
         current_amounts = self._get_produced_amount_per_product(schedule)
         unit_package_weights = [prod.weight for prod in self.site_manager.products]
         requested_unit_packages = [math.ceil(current_amounts[i] / unit_package_weights[i]) for i in range(self.num_products)]
@@ -47,14 +77,48 @@ class ConstraintsManager:
 
     def count_total_down_time(self, schedule) -> int:
         # schedule = schedule.view(dtype=np.ndarray)
-
         pass
 
-    def enforce_products_priority(self, schedule) -> int:
+    def count_forecast_exceeded_violations(self, schedule) -> int:
+        """
+        make sure schedule does not exceed product forecast goal.
+        the violation is calculated as sum of each product overflow forecast percentage.
+        :param schedule:
+        :return: number of violations
+        """
+        # fixme: test
+        current_amounts = self._get_produced_amount_per_product(schedule)
+        expected_amounts = [prod.get_amount_to_produce() for prod in self.site_manager.products]
+        # fixme: assuming product id is a running number
+        forecast_percentage_achieved = [(current_amounts[i] / expected_amounts[i])*100 for i in range(len(expected_amounts))]
+
+        violation_score = 0
+        for forecast in forecast_percentage_achieved:
+            if forecast > 100:
+                violation_score += (forecast - 100)  # to get the overflow diff
+
+        return violation_score
+
+    def count_forecast_goal_violations(self, schedule) -> int:
         """
         make sure prioritized products achieve maximum forecast
+        'punish' each product which doesn't achieve its forecast goal according to its priority
+        the violation is calculated as sum of each product missing forecast percentage * priority
         """
-        pass
+        # fixme: test
+        current_amounts = self._get_produced_amount_per_product(schedule)
+        expected_amounts = [prod.get_amount_to_produce() for prod in self.site_manager.products]
+        # fixme: assuming product id is a running number
+        missing_forecast_percentage = [(i, 100 - (current_amounts[i] / expected_amounts[i])*100) for i in range(len(expected_amounts))]
+
+        violation_score = 0
+        for tup in missing_forecast_percentage:
+            product_priority = self.site_manager.products[tup[0]].priority
+            missing_amount = tup[1]
+            if missing_amount < 100:  # we dont cover forecast for this product
+                violation_score += (missing_amount * product_priority)
+
+        return violation_score
 
     def ensure_minimal_transition_time(self, schedule) -> int:
         """
@@ -63,7 +127,7 @@ class ConstraintsManager:
         # schedule = schedule.view(dtype=np.ndarray)
         print()
 
-    def forecast_compliance(self, schedule):
+    def overall_forecast_compliance_violations(self, schedule):
         # fixme: need to take setup time and cleaning time into account
         # schedule = schedule.view(dtype=np.ndarray)
         expected_amount = [prod.get_amount_to_produce() for prod in self.site_manager.products]

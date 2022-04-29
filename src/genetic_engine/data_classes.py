@@ -31,7 +31,7 @@ class Product(Base):
     id: int
     bulk_id: int  # fixme: might need to hold BulkProduct instance for mutation
     name: str
-    priority: int  # 1 - 10 / low - urgent
+    priority: int  # 1 - 5 / low (1) - urgent (5)
     weight: int  # weight per unit, grams
     stock: int  # num packaged units, in thousands
     forecast: int  # num packaged units, in thousands

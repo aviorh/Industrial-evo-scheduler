@@ -66,11 +66,14 @@ class EAEngine:
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
         logger.info("in fitness calc")
         production_line_halb_compliance = self.constraints_manager.production_line_halb_compliance(schedule=individual)
-        forecast_compliance = self.constraints_manager.forecast_compliance(schedule=individual)
-        sufficient_packaging_material = self.constraints_manager.sufficient_packaging_material(schedule=individual)
+        forecast_compliance = self.constraints_manager.overall_forecast_compliance_violations(schedule=individual)
+        # sufficient_packaging_material = self.constraints_manager.sufficient_packaging_material(schedule=individual)
+        sufficient_packaging_material = 0
         ensure_minimal_transition_time = self.constraints_manager.ensure_minimal_transition_time(schedule=individual)
+        regular_hours_exceeded_violations = self.constraints_manager.count_regular_hours_exceeded_violations(schedule=individual)
+
         invalid_scheduling_violations = production_line_halb_compliance  # sum all invalid violations
-        hard_constraints_violations = forecast_compliance + ensure_minimal_transition_time  # sum all hard rules
+        hard_constraints_violations = enforce_products_priority + forecast_compliance + ensure_minimal_transition_time  # sum all hard rules
         soft_constraints_violations = sufficient_packaging_material  # sum all soft rules
 
         return self.constraints_manager.invalid_scheduling_penalty * invalid_scheduling_violations + \

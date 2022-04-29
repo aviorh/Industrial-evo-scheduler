@@ -34,7 +34,7 @@ def simulate_site_args():
     manpower_per_production_line = {0: 10, 1: 12, 2: 6}
     recipes = {0: {'sugar': 150, 'peanuts': 40}, 1: {'peanuts': 5}, 2: {'muju muju': 53}}
     product_packaging_unit = {0: 230, 1: 130, 2: 100, 3: 100}
-    retailer_packaging_unit = {0: (10000, 100), 1: (24000, 50), 2: (2000, 100), 3: (8000, 100)}
+    retailer_packaging_unit = {0: (10000, 100), 1: (24000, 50), 2: (2000, 100), 3: (8000, 0)}
 
     return production_lines, products, bulk_products, total_working_hours, num_shifts, shift_duration, \
            manpower_per_production_line, recipes, product_packaging_unit, retailer_packaging_unit
@@ -45,8 +45,9 @@ def prepare_site_manager() -> SiteManager:
     manpower_per_production_line, recipes, product_packaging_unit, retailer_packaging_unit = simulate_site_args()
 
     return SiteManager(production_lines=production_lines, products=products, bulk_products=bulk_products,
-                       total_working_hours=total_working_hours, num_shifts=num_shifts,
-                       shift_duration=shift_duration, manpower_per_production_line=manpower_per_production_line,
+                       total_working_hours=total_working_hours, num_shifts=num_shifts, usual_start_hour=6,
+                       usual_end_hour=17, shift_duration=shift_duration,
+                       manpower_per_production_line=manpower_per_production_line,
                        recipes=recipes, product_packaging_unit=product_packaging_unit,
                        retailer_packaging_unit=retailer_packaging_unit)
 
