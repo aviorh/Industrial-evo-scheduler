@@ -1,17 +1,18 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import ujson
 
 from src.genetic_engine.ea_conf import POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION
-from src.genetic_engine.site_manager import SiteManager
+from src.site_data_parser.data_classes import SiteData
 from src.genetic_engine.ea_engine import EAEngine
-from src.genetic_engine.data_classes import ProductionLine, Product, BulkProduct
+from src.site_data_parser.data_classes import ProductionLine, Product, BulkProduct
 
 
 def simulate_site_args():
     production_lines = [
-        ProductionLine(id=0, product_ids={0: 300, 1: 400, 2: 500, 3: 250}, manpower=10, setup_time=1.5, ffo=4),
-        ProductionLine(id=1, product_ids={0: 800, 1: 250, 3: 450}, manpower=12, setup_time=0.5, ffo=3),
-        ProductionLine(id=2, product_ids={2: 350}, manpower=6, setup_time=1.0, ffo=5)
+        ProductionLine(id=0, productIds={0: 300, 1: 400, 2: 500, 3: 250}, manpower=10, setupTime=1.5, ffo=4),
+        ProductionLine(id=1, productIds={0: 800, 1: 250, 3: 450}, manpower=12, setupTime=0.5, ffo=3),
+        ProductionLine(id=2, productIds={2: 350}, manpower=6, setupTime=1.0, ffo=5)
     ]
     products = [
         Product(id=0, bulk_id=0, name='Bissli 100g', priority=1, weight=100,
@@ -24,9 +25,9 @@ def simulate_site_args():
                 stock=10, forecast=100, unit_package_id=3, retailer_package_id=3)
     ]
     bulk_products = [
-        BulkProduct(id=0, recipe_id=0, transition_time=0.5, production_line_ids=[0, 1]),
-        BulkProduct(id=1, recipe_id=1, transition_time=1, production_line_ids=[0, 2]),
-        BulkProduct(id=2, recipe_id=2, transition_time=0.5, production_line_ids=[0, 1])
+        BulkProduct(id=0, recipeId=0, transitionTime=0.5, productionLineIds=[0, 1]),
+        BulkProduct(id=1, recipeId=1, transitionTime=1, productionLineIds=[0, 2]),
+        BulkProduct(id=2, recipeId=2, transitionTime=0.5, productionLineIds=[0, 1])
     ]
     total_working_hours = 18 * 5
     num_shifts = 3
@@ -40,16 +41,21 @@ def simulate_site_args():
            manpower_per_production_line, recipes, product_packaging_unit, retailer_packaging_unit
 
 
-def prepare_site_manager() -> SiteManager:
+def prepare_site_manager() -> SiteData:
     production_lines, products, bulk_products, total_working_hours, num_shifts, shift_duration, \
     manpower_per_production_line, recipes, product_packaging_unit, retailer_packaging_unit = simulate_site_args()
 
-    return SiteManager(production_lines=production_lines, products=products, bulk_products=bulk_products,
-                       total_working_hours=total_working_hours, num_shifts=num_shifts, usual_start_hour=6,
-                       usual_end_hour=17, shift_duration=shift_duration,
-                       manpower_per_production_line=manpower_per_production_line,
-                       recipes=recipes, product_packaging_unit=product_packaging_unit,
-                       retailer_packaging_unit=retailer_packaging_unit)
+    site_data = SiteData(productionLines=production_lines, products=products, bulkProducts=bulk_products,
+                    totalWorkingHours=total_working_hours, numShifts=num_shifts, usualStartHour=6,
+                    usualEndHour=17, shiftDuration=shift_duration,
+                    manpowerPerProductionLine=manpower_per_production_line,
+                    recipes=recipes, productPackagingUnit=product_packaging_unit,
+                    retailerPackagingUnit=retailer_packaging_unit)
+
+    json_data = site_data.to_dict()
+    with open('/Users/avior/Desktop/final-project/Industrial-evo-scheduler/tests/files/site_data.json', 'w', encoding='utf-8') as f:
+        ujson.dump(json_data, f, ensure_ascii=False, indent=4)
+    return site_data
 
 
 if __name__ == '__main__':

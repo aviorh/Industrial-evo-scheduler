@@ -8,7 +8,7 @@ from deap import tools, algorithms, creator, base
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY
-from src.genetic_engine.site_manager import SiteManager
+from src.site_data_parser.data_classes import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
 from src.genetic_engine.tools.mutation import mutFlipBit
 
@@ -16,7 +16,7 @@ logger = logging.getLogger()
 
 
 class EAEngine:
-    def __init__(self, site_manager: SiteManager):
+    def __init__(self, site_manager: SiteData):
         """order of initialization matters"""
         np.random.seed(RANDOM_SEED)
 
@@ -73,7 +73,7 @@ class EAEngine:
         regular_hours_exceeded_violations = self.constraints_manager.count_regular_hours_exceeded_violations(schedule=individual)
 
         invalid_scheduling_violations = production_line_halb_compliance  # sum all invalid violations
-        hard_constraints_violations = enforce_products_priority + forecast_compliance + ensure_minimal_transition_time  # sum all hard rules
+        hard_constraints_violations = forecast_compliance + ensure_minimal_transition_time  # sum all hard rules
         soft_constraints_violations = sufficient_packaging_material  # sum all soft rules
 
         return self.constraints_manager.invalid_scheduling_penalty * invalid_scheduling_violations + \
