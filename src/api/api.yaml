@@ -12,6 +12,19 @@ paths:
       responses:
         '200':
           description: bla bla
-
-
-
+  /problem_data:
+    post:
+      summary: uploading a json file with problem data
+      operationId: src.api.api.create_problem_data
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: byte
+      responses:
+        '200':
+          description: site data object created

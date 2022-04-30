@@ -65,10 +65,10 @@ class SiteData:
     :param usual_start_hour: usual start hour of the site on a regular day
     :param usual_end_hour: usual end hour of the site on a regular day
     :param shift_duration:
-    :param manpower_per_production_line: production-line-id -> manpower needed to operate
     :param recipes: recipe-id -> dictionary containing all ingredients and quantities
-    :param product_packaging_unit: package id -> quantity. ex: Bissli Grill 100g unit package
-    :param retailer_packaging_unit: packagge id -> (quantity, num units per retailer package). ex: Cardboard-box Bissli Grill 100g 1 unit package
+    :param rawMaterialsStock: raw material id -> raw material existing stock in kgs
+    :param product_packaging_unit: package id -> existing stock quantity. ex: Bissli Grill 100g unit package
+    :param retailer_packaging_unit: packagge id -> existing stock quantity. ex: Cardboard-box Bissli Grill 100g 1 unit package
     """
     productionLines: List[ProductionLine]
     products: List[Product]
@@ -79,9 +79,9 @@ class SiteData:
     numShifts: int
     shiftDuration: int
     totalWorkingHours: int
-    manpowerPerProductionLine: Dict[int, int]
 
     recipes: Dict[int, Dict]
+    rawMaterialsStock: Dict[str, int]
     productPackagingUnit: Dict[int, int]
     retailerPackagingUnit: Dict[int, Tuple[int, int]]
 
