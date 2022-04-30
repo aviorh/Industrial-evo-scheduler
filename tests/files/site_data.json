@@ -1,0 +1,157 @@
+{
+    "productionLines": [
+        {
+            "id": 0,
+            "productIds": {
+                "0": 300,
+                "1": 400,
+                "2": 500,
+                "3": 250
+            },
+            "manpower": 10,
+            "setupTime": 1.5,
+            "ffo": 4
+        },
+        {
+            "id": 1,
+            "productIds": {
+                "0": 800,
+                "1": 250,
+                "3": 450
+            },
+            "manpower": 12,
+            "setupTime": 0.5,
+            "ffo": 3
+        },
+        {
+            "id": 2,
+            "productIds": {
+                "2": 350
+            },
+            "manpower": 6,
+            "setupTime": 1.0,
+            "ffo": 5
+        }
+    ],
+    "products": [
+        {
+            "id": 0,
+            "bulk_id": 0,
+            "name": "Bissli 100g",
+            "priority": 1,
+            "weight": 100,
+            "stock": 50,
+            "forecast": 100,
+            "unit_package_id": 0,
+            "retailer_package_id": 0
+        },
+        {
+            "id": 1,
+            "bulk_id": 0,
+            "name": "Bissli 150g",
+            "priority": 1,
+            "weight": 150,
+            "stock": 0,
+            "forecast": 80,
+            "unit_package_id": 1,
+            "retailer_package_id": 1
+        },
+        {
+            "id": 2,
+            "bulk_id": 1,
+            "name": "Bamba 50g",
+            "priority": 2,
+            "weight": 50,
+            "stock": 50,
+            "forecast": 300,
+            "unit_package_id": 2,
+            "retailer_package_id": 2
+        },
+        {
+            "id": 3,
+            "bulk_id": 2,
+            "name": "Apropo 50g",
+            "priority": 3,
+            "weight": 50,
+            "stock": 10,
+            "forecast": 100,
+            "unit_package_id": 3,
+            "retailer_package_id": 3
+        }
+    ],
+    "bulkProducts": [
+        {
+            "id": 0,
+            "recipeId": 0,
+            "transitionTime": 0.5,
+            "productionLineIds": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 1,
+            "recipeId": 1,
+            "transitionTime": 1,
+            "productionLineIds": [
+                0,
+                2
+            ]
+        },
+        {
+            "id": 2,
+            "recipeId": 2,
+            "transitionTime": 0.5,
+            "productionLineIds": [
+                0,
+                1
+            ]
+        }
+    ],
+    "usualStartHour": 6,
+    "usualEndHour": 17,
+    "numShifts": 3,
+    "shiftDuration": 6,
+    "totalWorkingHours": 90,
+    "manpowerPerProductionLine": {
+        "0": 10,
+        "1": 12,
+        "2": 6
+    },
+    "recipes": {
+        "0": {
+            "sugar": 150,
+            "peanuts": 40
+        },
+        "1": {
+            "peanuts": 5
+        },
+        "2": {
+            "muju muju": 53
+        }
+    },
+    "productPackagingUnit": {
+        "0": 230,
+        "1": 130,
+        "2": 100,
+        "3": 100
+    },
+    "retailerPackagingUnit": {
+        "0": [
+            10000,
+            100
+        ],
+        "1": [
+            24000,
+            50
+        ],
+        "2": [
+            2000,
+            100
+        ],
+        "3": [
+            8000,
+            0
+        ]
+    }
+}
