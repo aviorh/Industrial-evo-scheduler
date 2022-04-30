@@ -22,3 +22,6 @@ def get_problem_by_id(problem_id: int):
 
     return problem
 
+
+def create_problem_data(file):
+    return "success"
