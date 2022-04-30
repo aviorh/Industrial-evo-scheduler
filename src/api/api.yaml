@@ -1,0 +1,17 @@
+openapi: 3.0.2
+info:
+  title: "Evolutionary Manufacturing Scheduler API"
+  version: 1.0.0
+servers:
+  - url: https://localhost:9999/api
+paths:
+  /schedule:
+    post:
+      summary: triggers a schedueling task
+      operationId: src.api.api.trigger_sched
+      responses:
+        '200':
+          description: bla bla
+
+
+
