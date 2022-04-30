@@ -16,11 +16,11 @@ logger = logging.getLogger()
 
 
 class EAEngine:
-    def __init__(self, site_manager: SiteData):
+    def __init__(self, site_data: SiteData):
         """order of initialization matters"""
         np.random.seed(RANDOM_SEED)
 
-        self.site_manager = site_manager
+        self.site_data = site_data
 
         self.logbook = tools.Logbook()
 
@@ -43,7 +43,7 @@ class EAEngine:
 
         self._prepare_genetic_operators()
 
-        self.constraints_manager = ConstraintsManager(site_manager=self.site_manager,
+        self.constraints_manager = ConstraintsManager(site_manager=self.site_data,
                                                       invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,  # INVALID_SCHEDULING_PENALTY,
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
                                                       soft_constraints_penalty=SOFT_CONSTRAINT_PENALTY)
@@ -61,7 +61,7 @@ class EAEngine:
     def _prepare_genetic_operators(self):
         self.toolbox.register("select", tools.selTournament, tournsize=2)
         self.toolbox.register("mate", cxTwoPoint)
-        self.toolbox.register("mutate", mutFlipBit, indpb=1.0 / self.site_manager.get_individual_length())
+        self.toolbox.register("mutate", mutFlipBit, indpb=1.0 / self.site_data.get_individual_length())
 
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
         logger.info("in fitness calc")
@@ -96,8 +96,8 @@ class EAEngine:
         to merge the results
         """
 
-        # return creator.Individual(np.random.randint(2, size=self.site_manager.get_individual_dimensions()))
-        num_product_lines, num_products, num_hours = self.site_manager.get_individual_dimensions()
+        # return creator.Individual(np.random.randint(2, size=self.site_data_list.get_individual_dimensions()))
+        num_product_lines, num_products, num_hours = self.site_data.get_individual_dimensions()
         production_line_sched_dims = (num_product_lines, num_hours)
 
         # create 2D manufacturing schedule
@@ -107,7 +107,7 @@ class EAEngine:
             total_production_schedule = total_production_schedule | line
 
         # create random sequence of product ids to fill the schedule and shuffle their order
-        prod_ids = [prod.id for prod in self.site_manager.products]
+        prod_ids = [prod.id for prod in self.site_data.products]
         random.shuffle(prod_ids)
 
         # create the 3rd dimension of schedule

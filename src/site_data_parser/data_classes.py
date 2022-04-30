@@ -70,6 +70,7 @@ class SiteData:
     :param product_packaging_unit: package id -> quantity. ex: Bissli Grill 100g unit package
     :param retailer_packaging_unit: packagge id -> (quantity, num units per retailer package). ex: Cardboard-box Bissli Grill 100g 1 unit package
     """
+    id: int
     productionLines: List[ProductionLine]
     products: List[Product]
     bulkProducts: List[BulkProduct]

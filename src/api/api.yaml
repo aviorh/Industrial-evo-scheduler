@@ -12,6 +12,36 @@ paths:
       responses:
         '200':
           description: bla bla
-
-
-
+  /problem:
+    post:
+      summary: create a new problem from a given site data (id)
+      operationId: src.api.api.add_problem
+      requestBody:
+        description: related site data id
+        content:
+          application/json:
+            schema:
+              type: integer
+        required: true
+      responses:
+        '200':
+          description: successfully created new problem
+      x-codegen-request-body-name: body
+  /problem/{problemId}:
+    get:
+      summary: get problem by id
+      operationId: src.api.api.get_problem_by_id
+      responses:
+        '200':
+          description: successfully fetched problem
+          schema:
+      parameters:
+        - name: "problemId"
+          in: "path"
+          required: true
+          type: integer
+definitions:
+  Order:
+    type: "Problem"
+    properties:
+      id:
