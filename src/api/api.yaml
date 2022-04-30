@@ -12,9 +12,9 @@ paths:
       responses:
         '200':
           description: bla bla
-  /site_data:
+  /site-data:
     post:
-      summary: uploading a json file with problem data
+      summary: uploading a json file with site data
       operationId: src.api.api.create_problem_data
       requestBody:
         content:
@@ -43,19 +43,22 @@ paths:
         '200':
           description: successfully created new problem
       x-codegen-request-body-name: body
-  /problem/{problemId}:
+  /problem/findById:
     get:
       summary: get problem by id
       operationId: src.api.api.get_problem_by_id
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          required: true
       responses:
         '200':
           description: successfully fetched problem
-          schema:
-      parameters:
-        - name: "problemId"
-          in: "path"
-          required: true
-          type: integer
+          content:
+            application/xml:
+              schema:
 definitions:
   Order:
     type: "Problem"
