@@ -7,7 +7,8 @@ def trigger_sched():
     return 'success'
 
 
-def add_problem(site_data_id: int):
+def add_problem(**kwargs):
+    site_data_id = kwargs['body']['id']  # fixme: is it the right way to pass body params?
     app_manager = AppManager()
 
     ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))

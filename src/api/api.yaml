@@ -37,30 +37,29 @@ paths:
         content:
           application/json:
             schema:
-              type: integer
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int32
         required: true
       responses:
         '200':
           description: successfully created new problem
       x-codegen-request-body-name: body
-  /problem/findById:
-    get:
-      summary: get problem by id
-      operationId: src.api.api.get_problem_by_id
-      parameters:
-        - name: id
-          in: query
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: successfully fetched problem
-          content:
-            application/xml:
-              schema:
-definitions:
-  Order:
-    type: "Problem"
-    properties:
-      id:
+#  /problem/findById:
+#    get:
+#      summary: get problem by id
+#      operationId: src.api.api.get_problem_by_id
+#      parameters:
+#        - name: id
+#          in: query
+#          schema:
+#            type: integer
+#          required: true
+#      responses:
+#        '200':
+#          description: successfully fetched problem
+#          content:
+#            application/xml:
+#              schema:
