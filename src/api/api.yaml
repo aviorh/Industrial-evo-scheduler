@@ -149,13 +149,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                selection_id:
                   type: integer
                   format: int32
                 selection_parameters:
                   type: object
               required:
-                - id
+                - selection_id
         required: true
       responses:
         '200':
@@ -183,13 +183,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                crossover_id:
                   type: integer
                   format: int32
                 crossover_parameters:
                   type: object
               required:
-                - id
+                - crossover_id
         required: true
       responses:
         '200':
@@ -217,11 +217,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                mutation_id:
                   type: integer
                   format: int32
+                mutation_parameters:
+                  type: object
               required:
-                - id
+                - mutation_id
         required: true
       responses:
         '200':

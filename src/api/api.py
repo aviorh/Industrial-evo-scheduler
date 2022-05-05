@@ -15,7 +15,7 @@ def add_mutation_method(body, problem_id):
     if connexion.request.is_json:
         body = connexion.request.get_json()
 
-    mutation_id = body['id']
+    mutation_id = body['mutation_id']
     mutation_params = body['mutation_parameters']
 
     am = AppManager()
@@ -101,7 +101,7 @@ def edit_crossover_method(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    crossover_id = body['id']
+    crossover_id = body['crossover_id']
     crossover_params = body['crossover_parameters']
 
     am = AppManager()
@@ -184,7 +184,7 @@ def edit_selection_method(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    selection_id = body['id']
+    selection_id = body['selection_id']
     selection_params = body['selection_parameters']
 
     am = AppManager()

@@ -1,8 +1,6 @@
-import os
-from typing import List, Dict
-
-from werkzeug.datastructures import FileStorage
 from typing import Dict
+from werkzeug.datastructures import FileStorage
+
 from src.app_manager.problem import Problem
 from src.genetic_engine.ea_engine import EAEngine
 from src.site_data_parser.data_classes import SiteData
@@ -38,7 +36,7 @@ class AppManager(metaclass=SingletonMeta):
     def create_problem(self, site_data_id):
 
         ea_engine = EAEngine(site_data=self.get_site_data_by_id(site_data_id))
-        problem = Problem(id=self.problem_counter, siteDataId=site_data_id, engine=ea_engine)
+        problem = Problem(id=self.problem_counter, site_data_id=site_data_id, engine=ea_engine)
         return self.add_problem(problem)
 
     # fixme: return 404 not found when there is keyError
