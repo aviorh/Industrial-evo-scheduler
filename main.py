@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-import ujson
 
 from src.genetic_engine.ea_conf import POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION
 from src.site_data_parser.data_classes import SiteData

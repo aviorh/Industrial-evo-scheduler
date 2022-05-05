@@ -1,5 +1,5 @@
 {
-    "productionLines": [
+    "production_lines": [
         {
             "id": 0,
             "productIds": {
@@ -83,40 +83,40 @@
             "units_per_retailer_package_unit": 50
         }
     ],
-    "bulkProducts": [
+    "bulk_products": [
         {
             "id": 0,
-            "recipeId": 0,
-            "transitionTime": 0.5,
-            "productionLineIds": [
+            "recipe_id": 0,
+            "transition_time": 0.5,
+            "production_line_ids": [
                 0,
                 1
             ]
         },
         {
             "id": 1,
-            "recipeId": 1,
-            "transitionTime": 1,
-            "productionLineIds": [
+            "recipe_id": 1,
+            "transition_time": 1,
+            "production_line_ids": [
                 0,
                 2
             ]
         },
         {
             "id": 2,
-            "recipeId": 2,
-            "transitionTime": 0.5,
-            "productionLineIds": [
+            "recipe_id": 2,
+            "transition_time": 0.5,
+            "production_line_ids": [
                 0,
                 1
             ]
         }
     ],
-    "usualStartHour": 6,
-    "usualEndHour": 18,
-    "numShifts": 3,
-    "shiftDuration": 6,
-    "totalWorkingHours": 90,
+    "usual_start_hour": 6,
+    "usual_end_hour": 18,
+    "num_shifts": 3,
+    "shift_duration": 6,
+    "total_working_hours": 90,
     "recipes": {
         "0": {
             "123456": 40,
@@ -135,7 +135,7 @@
             "652588": 23
         }
     },
-    "rawMaterialsStock": {
+    "raw_materials_stock": {
         "123456": 40,
         "111223": 45,
         "112589": 58,
@@ -145,13 +145,13 @@
         "788856": 52,
         "652588": 23
     },
-    "productPackagingUnit": {
+    "product_packaging_unit": {
         "0": 230,
         "1": 130,
         "2": 100,
         "3": 100
     },
-    "retailerPackagingUnit": {
+    "retailer_packaging_unit": {
         "0": 100,
         "1": 200,
         "2": 250,
