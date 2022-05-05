@@ -41,9 +41,8 @@ def add_problem(body):
     ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))
     problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id, engine=ea_engine)
 
-    app_manager.add_problem(problem)    
-    
-    return 'do some magic!'
+    return app_manager.add_problem(problem)
+
 
 
 def add_stopping_condition(problem_id, body=None):
@@ -87,7 +86,8 @@ def delete_problem(problem_id):
 
     :rtype: None
     """
-    return 'do some magic!'
+    app_manger = AppManager()
+    return app_manger.delete_problem(problem_id)
 
 
 def delete_site_data(site_data_id):

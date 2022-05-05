@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Dict
 from itertools import count
 
 from werkzeug.datastructures import FileStorage
@@ -21,8 +21,11 @@ class AppManager(metaclass=SingletonMeta):
 
     """
 
-    # static variable, uses for creating ids for SiteData
+    # static variable, used for creating ids for SiteData
     site_data_counter = 0
+
+    #static variable, used for creating ids for Problem
+    problem_counter = 0
 
     def __init__(self):
         self.problem_ids = count(0)
@@ -30,36 +33,32 @@ class AppManager(metaclass=SingletonMeta):
         self.user_ids = count(0)
         self.parser = SiteDataParser()
 
-        self.problems: List[Problem] = []
-        self.site_data_list: List[SiteData] = []
+        self.problems: Dict[int, Problem] = dict()
+        self.site_data_collection: Dict[int, SiteData] = dict()
         # users: List[User] = []
 
+    # fixme: engine is not json serializable
     def add_problem(self, problem: Problem):
-        self.problems.append(problem)
-        self.problem_ids = next(self.problem_ids)
+        self.problems[self.problem_counter] = problem
+        self.problem_counter += 1
+        return problem
 
     def get_new_problem_id(self):
         return self.problem_ids
 
+    # fixme: return 404 not found when there is keyError
     def get_site_data_by_id(self, site_data_id: int):
-        for site_data in self.site_data_list:
-            if site_data.id == site_data_id:
-                return site_data
+        return self.site_data_collection.get(site_data_id)
 
-        raise ValueError(f"site data {site_data_id} not found")
-
+    # fixme: return 404 not found when there is keyError
     def get_problem_by_id(self, problem_id: int):
-        for problem in self.problems:
-            if problem.id == problem_id:
-                return problem
-
-        raise ValueError(f"Problem {problem_id} not found")
+        return self.problems.get(problem_id)
 
     def create_site_data(self, file: FileStorage):
         self.save_site_data_file(file)
         site_data = self.parser.parse_file(file, self.site_data_counter)
+        self.site_data_collection[self.site_data_counter] = site_data
         self.site_data_counter += 1
-        self.site_data_list.append(site_data)
         return site_data
 
     def save_site_data_file(self, file: FileStorage):
@@ -69,3 +68,6 @@ class AppManager(metaclass=SingletonMeta):
             file_name=f'site_data_{self.site_data_counter}.json'
         )
 
+    def delete_problem(self, problem_id: int):
+        del self.problems[problem_id]
+        return self.problems

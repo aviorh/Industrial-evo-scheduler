@@ -71,20 +71,20 @@ class SiteData:
     :param retailer_packaging_unit: packagge id -> existing stock quantity. ex: Cardboard-box Bissli Grill 100g 1 unit package
     """
     id: int
-    productionLines: List[ProductionLine]
+    production_lines: List[ProductionLine]
     products: List[Product]
-    bulkProducts: List[BulkProduct]
+    bulk_products: List[BulkProduct]
 
-    usualStartHour: int
-    usualEndHour: int
-    numShifts: int
-    shiftDuration: int
-    totalWorkingHours: int
+    usual_start_hour: int
+    usual_end_hour: int
+    num_shifts: int
+    shift_duration: int
+    total_working_hours: int
 
     recipes: Dict[int, Dict]
-    rawMaterialsStock: Dict[str, int]
-    productPackagingUnit: Dict[int, int]
-    retailerPackagingUnit: Dict[int, Tuple[int, int]]
+    raw_materials_stock: Dict[str, int]
+    product_packaging_unit: Dict[int, int]
+    retailer_packaging_unit: Dict[int, Tuple[int, int]]
 
     def get_individual_dimensions(self):
         """
