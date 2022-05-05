@@ -1,14 +1,4 @@
 import connexion
-import six
-
-from src.api.auto_generated_models.problem_body import ProblemBody
-from src.api.auto_generated_models.problem_id_crossover_body import ProblemIdCrossoverBody
-from src.api.auto_generated_models.problem_id_generations_body import ProblemIdGenerationsBody
-from src.api.auto_generated_models.problem_id_mutation_body import ProblemIdMutationBody
-from src.api.auto_generated_models.problem_id_population_body import ProblemIdPopulationBody
-from src.api.auto_generated_models.problem_id_selection_body import ProblemIdSelectionBody
-from src.api.auto_generated_models.problem_id_stoppingcondition_body import ProblemIdStoppingconditionBody
-from src.api.swagger_helpers import util
 
 from src.app_manager.app_manager import AppManager
 from src.app_manager.problem import Problem
@@ -32,7 +22,7 @@ def add_mutation_method(body, problem_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = ProblemIdMutationBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -47,12 +37,13 @@ def add_problem(body):
     :rtype: None
     """
     if connexion.request.is_json:
-        body = ProblemBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     
     app_manager = AppManager()
+    site_data_id = body['site_data_id']
 
-    ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(body.site_data_id))
-    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=body.site_data_id, engine=ea_engine)
+    ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))
+    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id, engine=ea_engine)
 
     app_manager.add_problem(problem)    
     
@@ -72,7 +63,7 @@ def add_stopping_condition(problem_id, body=None):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = ProblemIdStoppingconditionBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -128,7 +119,7 @@ def edit_crossover_method(body, problem_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = ProblemIdCrossoverBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -145,7 +136,7 @@ def edit_ea_population_size(body, problem_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = ProblemIdPopulationBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -164,7 +155,7 @@ def edit_mutation_method(body, problem_id, mutation_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = object.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -181,7 +172,7 @@ def edit_num_ea_generation(body, problem_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = ProblemIdGenerationsBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -198,7 +189,7 @@ def edit_selection_method(body, problem_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = ProblemIdSelectionBody.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 
@@ -217,7 +208,7 @@ def edit_stopping_condition(body, problem_id, cond_id):
     :rtype: object
     """
     if connexion.request.is_json:
-        body = object.from_dict(connexion.request.get_json())
+        body = connexion.request.get_json()
     return 'do some magic!'
 
 

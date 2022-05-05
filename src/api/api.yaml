@@ -37,13 +37,13 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /site-data/{id}:
+  /site-data/{site_data_id}:
     get:
       summary: get site-data of specific id
       operationId: src.api.api.get_site_data_by_id
       parameters:
         - in: path
-          name: id
+          name: site_data_id
           schema:
             type: integer
           required: true
@@ -61,7 +61,7 @@ paths:
       operationId: src.api.api.delete_site_data
       parameters:
         - in: path
-          name: id
+          name: site_data_id
           schema:
             type: integer
           required: true
@@ -99,13 +99,13 @@ paths:
         '200':
           description: successfully created new problem
       x-codegen-request-body-name: body
-  /problems/{id}:
+  /problems/{problem_id}:
     get:
       summary: get problem by id
       operationId: src.api.api.get_problem_by_id
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -123,7 +123,7 @@ paths:
       operationId: src.api.api.delete_problem
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -131,13 +131,13 @@ paths:
       responses:
         '200':
           description: problem object deleted
-  /problem/{id}/selection:
+  /problem/{problem_id}/selection:
     put:
       summary: change selection method for specific problem
       operationId: src.api.api.edit_selection_method
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -163,13 +163,13 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /problem/{id}/crossover:
+  /problem/{problem_id}/crossover:
     put:
       summary: change crossover method for specific problem
       operationId: src.api.api.edit_crossover_method
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -195,13 +195,13 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /problem/{id}/mutation:
+  /problem/{problem_id}/mutation:
     post:
       summary: add new mutation for specific problem
       operationId: src.api.api.add_mutation_method
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -276,13 +276,13 @@ paths:
       responses:
         '200':
           description: mutation object deleted
-  /problem/{id}/generations:
+  /problem/{problem_id}/generations:
     put:
       summary: set num of generation for EA to run
       operationId: src.api.api.edit_num_ea_generation
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -308,13 +308,13 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /problem/{id}/population:
+  /problem/{problem_id}/population:
     put:
       summary: set population size for EA to run
       operationId: src.api.api.edit_ea_population_size
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
@@ -340,13 +340,13 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /problem/{id}/stopping-condition:
+  /problem/{problem_id}/stopping-condition:
     post:
       summary: add new stopping condition
       operationId: src.api.api.add_stopping_condition
       parameters:
         - in: path
-          name: id
+          name: problem_id
           schema:
             type: integer
           required: true
