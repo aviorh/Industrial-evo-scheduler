@@ -5,10 +5,6 @@ from src.app_manager.problem import Problem
 from src.genetic_engine.ea_engine import EAEngine
 
 
-def create_problem_data(file):
-    return "success"
-
-
 def add_mutation_method(body, problem_id):
     """add new mutation for specific problem
 
@@ -69,7 +65,6 @@ def add_stopping_condition(problem_id, body=None):
 
 def create_site_data(file=None):
     """uploading a json file with site data
-
    
 
     :param file: 
@@ -77,7 +72,9 @@ def create_site_data(file=None):
 
     :rtype: object
     """
-    return 'do some magic!'
+
+    app_manager = AppManager()
+    return app_manager.create_site_data(file)
 
 
 def delete_problem(problem_id):
