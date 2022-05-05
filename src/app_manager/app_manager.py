@@ -1,7 +1,4 @@
-import os
-from typing import List, Dict
-from itertools import count
-
+from typing import Dict
 from werkzeug.datastructures import FileStorage
 
 from src.app_manager.problem import Problem
@@ -21,19 +18,11 @@ class AppManager(metaclass=SingletonMeta):
     collection of users
 
     """
-
-    # static variable, used for creating ids for SiteData
-    site_data_counter = 0
-
-    #static variable, used for creating ids for Problem
-    problem_counter = 0
+    site_data_counter = 0  # used for creating ids for SiteData
+    problem_counter = 0  # used for creating ids for Problem
 
     def __init__(self):
-        self.problem_ids = count(0)
-        self.site_data_ids = count(0)
-        self.user_ids = count(0)
         self.parser = SiteDataParser()
-
         self.problems: Dict[int, Problem] = dict()
         self.site_data_collection: Dict[int, SiteData] = dict()
         # users: List[User] = []
@@ -44,14 +33,10 @@ class AppManager(metaclass=SingletonMeta):
         self.problem_counter += 1
         return problem
 
-    def get_new_problem_id(self):
-        return self.problem_ids
-
     def create_problem(self, site_data_id):
 
         ea_engine = EAEngine(site_data=self.get_site_data_by_id(site_data_id))
-        problem = Problem(id=self.get_new_problem_id(), siteDataId=site_data_id, engine=ea_engine)
-
+        problem = Problem(id=self.problem_counter, site_data_id=site_data_id, engine=ea_engine)
         return self.add_problem(problem)
 
     # fixme: return 404 not found when there is keyError

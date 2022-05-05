@@ -68,7 +68,7 @@ if __name__ == '__main__':
     site_manager.print_schedule(random_schedule)
 
     # run algorithm
-    final_population = engine.run(POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION)
+    final_population = engine.run()
 
     # print best solution found:
     best = engine.hall_of_fame.items[0]

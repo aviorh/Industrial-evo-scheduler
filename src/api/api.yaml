@@ -149,11 +149,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                selection_id:
                   type: integer
                   format: int32
+                selection_parameters:
+                  type: object
               required:
-                - id
+                - selection_id
         required: true
       responses:
         '200':
@@ -181,11 +183,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                crossover_id:
                   type: integer
                   format: int32
+                crossover_parameters:
+                  type: object
               required:
-                - id
+                - crossover_id
         required: true
       responses:
         '200':
@@ -213,11 +217,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                mutation_id:
                   type: integer
                   format: int32
+                mutation_parameters:
+                  type: object
               required:
-                - id
+                - mutation_id
         required: true
       responses:
         '200':
@@ -294,11 +300,11 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                generations:
                   type: integer
                   format: int32
               required:
-                - id
+                - generations
         required: true
       responses:
         '200':
@@ -326,11 +332,11 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                population_size:
                   type: integer
                   format: int32
               required:
-                - id
+                - population_size
         required: true
       responses:
         '200':
@@ -497,7 +503,7 @@ paths:
       x-codegen-request-body-name: body
     put:
       summary: manually update solution
-      operationId: src.api.api.update_curernt_ea_solution
+      operationId: src.api.api.update_current_ea_solution
       parameters:
         - in: path
           name: problem_id

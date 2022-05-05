@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+import ujson as json
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
 
 from src.genetic_engine.ea_engine import EAEngine
@@ -26,4 +27,9 @@ class Problem:
     description: str = ''
     creation_time: str = field(default_factory=_get_datetime_str)
     schedule: str = None  # json? dict?
+
+    def to_json(self):
+        dikt = asdict(self)
+        del dikt['schedule']
+        return dikt
 
