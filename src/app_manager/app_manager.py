@@ -73,3 +73,28 @@ class AppManager(metaclass=SingletonMeta):
         else:
             del self.site_data_collection[site_data_id]
         return self.site_data_collection
+
+    def add_mutation(self, problem_id, mutation_id, mutation_params):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.add_mutation(mutation_id, mutation_params)
+        return problem
+
+    def det_crossover_method(self, problem_id, crossover_id, crossover_params):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.set_crossover_method(crossover_id, crossover_params)
+        return problem
+
+    def set_population_size(self, problem_id, population_size):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.set_population_size(population_size)
+        return problem
+
+    def set_num_of_generations(self, problem_id, num_of_generations):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.set_num_generations(num_of_generations)
+        return problem
+
+    def set_selection_method(self, problem_id, selection_id, selection_params):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.set_selection_method(selection_id, selection_params)
+        return problem
