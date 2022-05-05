@@ -21,11 +21,11 @@ class Problem:
     timetable in response format (json?)
     
     """
-    id: str
-    siteDataId: int
+    id: int
+    site_data_id: int
     engine: EAEngine
     description: str = ''
-    creationTime: str = field(default_factory=_get_datetime_str)
+    creation_time: str = field(default_factory=_get_datetime_str)
     schedule: str = None  # json? dict?
 
     def to_json(self):

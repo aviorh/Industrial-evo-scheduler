@@ -1,19 +1,10 @@
 import connexion
 
 from src.app_manager.app_manager import AppManager
-from src.app_manager.problem import Problem
-from src.genetic_engine.ea_engine import EAEngine
-
-
-def create_problem_data(file):
-    return "success"
 
 
 def add_mutation_method(body, problem_id):
     """add new mutation for specific problem
-
-   
-
     :param body: mutation configuration
     :type body: dict | bytes
     :param problem_id: Numeric ID to get problem
@@ -36,9 +27,6 @@ def add_mutation_method(body, problem_id):
 
 def add_problem(body):
     """create a new problem from a given site data (id)
-
-   
-
     :param body: related site data id
     :type body: dict | bytes
 
@@ -50,18 +38,11 @@ def add_problem(body):
     app_manager = AppManager()
     site_data_id = body['site_data_id']
 
-    ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))
-    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id)
-    app_manager.add_problem(problem)    
-    
-    return problem.to_json()
+    return app_manager.create_problem(site_data_id=site_data_id)
 
 
 def add_stopping_condition(problem_id, body=None):
     """add new stopping condition
-
-   
-
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
     :param body: 
@@ -76,41 +57,37 @@ def add_stopping_condition(problem_id, body=None):
 
 def create_site_data(file=None):
     """uploading a json file with site data
-
-   
-
-    :param file: 
+    :param file:
     :type file: str
 
     :rtype: object
     """
-    return 'do some magic!'
+
+    app_manager = AppManager()
+    return app_manager.create_site_data(file)
 
 
 def delete_problem(problem_id):
     """remove problem
-
-   
 
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
 
     :rtype: None
     """
-    return 'do some magic!'
+    app_manager = AppManager()
+    return app_manager.delete_problem(problem_id)
 
 
 def delete_site_data(site_data_id):
     """remove site data
-
-   
-
     :param site_data_id: Numeric ID to get site-data
     :type site_data_id: int
 
     :rtype: None
     """
-    return 'do some magic!'
+    app_manager = AppManager()
+    return app_manager.delete_site_data(site_data_id=site_data_id)
 
 
 def edit_crossover_method(body, problem_id):
