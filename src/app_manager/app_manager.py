@@ -5,6 +5,7 @@ from itertools import count
 from werkzeug.datastructures import FileStorage
 
 from src.app_manager.problem import Problem
+from src.genetic_engine.ea_engine import EAEngine
 from src.site_data_parser.data_classes import SiteData
 from src.site_data_parser.site_data_parser import SiteDataParser
 from src.utils.singleton import SingletonMeta
@@ -46,6 +47,13 @@ class AppManager(metaclass=SingletonMeta):
     def get_new_problem_id(self):
         return self.problem_ids
 
+    def create_problem(self, site_data_id):
+
+        ea_engine = EAEngine(site_data=self.get_site_data_by_id(site_data_id))
+        problem = Problem(id=self.get_new_problem_id(), siteDataId=site_data_id, engine=ea_engine)
+
+        return self.add_problem(problem)
+
     # fixme: return 404 not found when there is keyError
     def get_site_data_by_id(self, site_data_id: int):
         return self.site_data_collection.get(site_data_id)
@@ -71,3 +79,12 @@ class AppManager(metaclass=SingletonMeta):
     def delete_problem(self, problem_id: int):
         del self.problems[problem_id]
         return self.problems
+
+    # fixme: return apiError with status code 409 in case of a conflict
+    def delete_site_data(self, site_data_id):
+        relevant_problems = [problem for problem in self.problems.values() if problem.site_data_id == site_data_id]
+        if len(relevant_problems) > 0:
+            return "status code 409 - conflict. could not delete the data"
+        else:
+            del self.site_data_collection[site_data_id]
+        return self.site_data_collection

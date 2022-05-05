@@ -1,3 +1,9 @@
+## [ 05.05.2022, 19:45 ]
+
+### Added
+- SiteData deletion endpoint addition
+- redundant logic from api.py removed
+
 ## [ 05.05.2022, 19:15 ]
 
 ### Added

@@ -21,9 +21,9 @@ class Problem:
     
     """
     id: int
-    siteDataId: int
+    site_data_id: int
     engine: EAEngine
     description: str = ''
-    creationTime: str = field(default_factory=_get_datetime_str)
+    creation_time: str = field(default_factory=_get_datetime_str)
     schedule: str = None  # json? dict?
 
