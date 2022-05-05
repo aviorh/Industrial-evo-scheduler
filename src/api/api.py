@@ -50,8 +50,8 @@ def add_problem(body):
     app_manager = AppManager()
     site_data_id = body['site_data_id']
 
-    # ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))  fixme: until site-data is ready
-    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id, engine=None)
+    ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))
+    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id)
     app_manager.add_problem(problem)    
     
     return problem.to_json()
