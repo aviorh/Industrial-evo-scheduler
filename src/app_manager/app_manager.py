@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 from itertools import count
 
@@ -17,9 +18,7 @@ class AppManager(metaclass=SingletonMeta):
     """
 
     def __init__(self):
-        self.problem_ids = count(0)
-        self.site_data_ids = count(0)
-        self.user_ids = count(0)
+        self.problems_id_counter = 0
 
         self.problems: List[Problem] = []
         self.site_data_list: List[SiteData] = []
@@ -27,10 +26,10 @@ class AppManager(metaclass=SingletonMeta):
 
     def add_problem(self, problem: Problem):
         self.problems.append(problem)
-        self.problem_ids = next(self.problem_ids)
+        self.problems_id_counter += 1
 
     def get_new_problem_id(self):
-        return self.problem_ids
+        return self.problems_id_counter
 
     def get_site_data_by_id(self, site_data_id: int):
         for site_data in self.site_data_list:
@@ -39,7 +38,7 @@ class AppManager(metaclass=SingletonMeta):
 
         raise ValueError(f"site data {site_data_id} not found")
 
-    def get_problem_by_id(self, problem_id: int):
+    def get_problem_by_id(self, problem_id: int) -> Problem:
         for problem in self.problems:
             if problem.id == problem_id:
                 return problem

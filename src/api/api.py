@@ -23,7 +23,15 @@ def add_mutation_method(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    return 'do some magic!'
+
+    mutation_id = body['id']
+    mutation_params = body['mutation_parameters']
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+
+    problem.engine.add_mutation(mutation_id, mutation_params)
+    return problem.to_json()
 
 
 def add_problem(body):
@@ -42,12 +50,11 @@ def add_problem(body):
     app_manager = AppManager()
     site_data_id = body['site_data_id']
 
-    ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))
-    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id, engine=ea_engine)
-
+    # ea_engine = EAEngine(site_data=app_manager.get_site_data_by_id(site_data_id))  fixme: until site-data is ready
+    problem = Problem(id=app_manager.get_new_problem_id(), siteDataId=site_data_id, engine=None)
     app_manager.add_problem(problem)    
     
-    return 'do some magic!'
+    return problem.to_json()
 
 
 def add_stopping_condition(problem_id, body=None):
@@ -108,9 +115,6 @@ def delete_site_data(site_data_id):
 
 def edit_crossover_method(body, problem_id):
     """change crossover method for specific problem
-
-   
-
     :param body: crossover configuration
     :type body: dict | bytes
     :param problem_id: Numeric ID to get problem
@@ -120,14 +124,19 @@ def edit_crossover_method(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    return 'do some magic!'
+    crossover_id = body['id']
+    crossover_params = body['crossover_parameters']
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+
+    problem.engine.set_crossover_method(crossover_id, crossover_params)
+
+    return problem.to_json()
 
 
 def edit_ea_population_size(body, problem_id):
     """set population size for EA to run
-
-   
-
     :param body: size of population
     :type body: dict | bytes
     :param problem_id: Numeric ID to get problem
@@ -137,7 +146,14 @@ def edit_ea_population_size(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    return 'do some magic!'
+
+    population_size = body['population_size']
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+    problem.engine.set_population_size(population_size)
+
+    return problem.to_json()
 
 
 def edit_mutation_method(body, problem_id, mutation_id):
@@ -154,16 +170,12 @@ def edit_mutation_method(body, problem_id, mutation_id):
 
     :rtype: object
     """
-    if connexion.request.is_json:
-        body = connexion.request.get_json()
-    return 'do some magic!'
+
+    raise NotImplementedError("For now supporting only single mutation")
 
 
 def edit_num_ea_generation(body, problem_id):
     """set num of generation for EA to run
-
-   
-
     :param body: num generations
     :type body: dict | bytes
     :param problem_id: Numeric ID to get problem
@@ -173,13 +185,18 @@ def edit_num_ea_generation(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    return 'do some magic!'
+
+    max_generations = body['generations']
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+    problem.engine.set_num_generations(max_generations)
+
+    return problem.to_json()
 
 
 def edit_selection_method(body, problem_id):
     """change selection method for specific problem
-
-   
 
     :param body: selection configuration
     :type body: dict | bytes
@@ -190,7 +207,15 @@ def edit_selection_method(body, problem_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    return 'do some magic!'
+    selection_id = body['id']
+    selection_params = body['selection_parameters']
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+
+    problem.engine.set_selection_method(selection_id, selection_params)
+
+    return problem.to_json()
 
 
 def edit_stopping_condition(body, problem_id, cond_id):
@@ -240,9 +265,6 @@ def get_ea_progress(problem_id):
 
 def get_problem_by_id(problem_id):
     """get problem by id
-
-   
-
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
 
@@ -251,18 +273,15 @@ def get_problem_by_id(problem_id):
     app_manager = AppManager()
     problem = app_manager.get_problem_by_id(problem_id)
 
-    return problem
+    return problem.to_json()
 
 
 def get_problems():
     """get all problems
-
-   
-
-
     :rtype: object
     """
-    return 'do some magic!'
+    app_manager = AppManager()
+    return app_manager.problems
 
 
 def get_site_data_by_id(site_data_id):
@@ -314,7 +333,7 @@ def remove_mutation(problem_id, mutation_id):
 
     :rtype: None
     """
-    return 'do some magic!'
+    raise NotImplementedError("For now supporting only single mutation")
 
 
 def start_ea(problem_id):
@@ -343,7 +362,7 @@ def stop_ea(problem_id):
     return 'do some magic!'
 
 
-def update_curernt_ea_solution(problem_id):
+def update_current_ea_solution(problem_id):
     """manually update solution
 
    

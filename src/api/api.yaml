@@ -152,6 +152,8 @@ paths:
                 id:
                   type: integer
                   format: int32
+                selection_parameters:
+                  type: object
               required:
                 - id
         required: true
@@ -184,6 +186,8 @@ paths:
                 id:
                   type: integer
                   format: int32
+                crossover_parameters:
+                  type: object
               required:
                 - id
         required: true
@@ -294,11 +298,11 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                generations:
                   type: integer
                   format: int32
               required:
-                - id
+                - generations
         required: true
       responses:
         '200':
@@ -326,11 +330,11 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                population_size:
                   type: integer
                   format: int32
               required:
-                - id
+                - population_size
         required: true
       responses:
         '200':
@@ -497,7 +501,7 @@ paths:
       x-codegen-request-body-name: body
     put:
       summary: manually update solution
-      operationId: src.api.api.update_curernt_ea_solution
+      operationId: src.api.api.update_current_ea_solution
       parameters:
         - in: path
           name: problem_id

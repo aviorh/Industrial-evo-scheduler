@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+import ujson as json
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
 
 from src.genetic_engine.ea_engine import EAEngine
@@ -20,10 +21,15 @@ class Problem:
     timetable in response format (json?)
     
     """
-    id: int
+    id: str
     siteDataId: int
     engine: EAEngine
     description: str = ''
     creationTime: str = field(default_factory=_get_datetime_str)
     schedule: str = None  # json? dict?
+
+    def to_json(self):
+        dikt = asdict(self)
+        del dikt['schedule']
+        return dikt
 

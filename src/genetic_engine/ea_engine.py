@@ -1,13 +1,13 @@
 import logging
 import random
-from typing import Tuple, Union, Any
+from typing import Tuple, Union, Any, Dict
 
 import numpy as np
 from deap import tools, algorithms, creator, base
 
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
-    HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY
+    HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION
 from src.site_data_parser.data_classes import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
 from src.genetic_engine.tools.mutation import mutFlipBit
@@ -16,6 +16,20 @@ logger = logging.getLogger()
 
 
 class EAEngine:
+    SELECTION_METHODS = {
+        0: tools.selTournament
+    }
+    CROSSOVER_METHODS = {
+        0: cxTwoPoint
+    }
+
+    MUTATIONS = {
+        0: mutFlipBit
+    }
+    DEFAULT_SELECTION_METHOD_INDEX = 0
+    DEFAULT_CROSSOVER_METHOD_INDEX = 0
+    DEFAULT_MUTATION_INDEX = 0
+
     def __init__(self, site_data: SiteData):
         """order of initialization matters"""
         np.random.seed(RANDOM_SEED)
@@ -48,6 +62,10 @@ class EAEngine:
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
                                                       soft_constraints_penalty=SOFT_CONSTRAINT_PENALTY)
 
+        self.set_population_size(size=POPULATION_SIZE)
+
+        self.set_num_generations(generations=MAX_GENERATIONS)
+
     def _prepare_population_creator(self):
         # create the population operator to generate a list of individuals:
         self.toolbox.register("population_creator", tools.initRepeat, list, self.toolbox.individual_creator)
@@ -59,9 +77,9 @@ class EAEngine:
         self.toolbox.register("individual_creator", self._create_individual)
 
     def _prepare_genetic_operators(self):
-        self.toolbox.register("select", tools.selTournament, tournsize=2)
-        self.toolbox.register("mate", cxTwoPoint)
-        self.toolbox.register("mutate", mutFlipBit, indpb=1.0 / self.site_data.get_individual_length())
+        self.set_selection_method(self.DEFAULT_SELECTION_METHOD_INDEX, params={'tournsize': 2})
+        self.set_crossover_method(self.DEFAULT_CROSSOVER_METHOD_INDEX, params={})
+        self.add_mutation(self.DEFAULT_MUTATION_INDEX, params={'indpb': 1.0 / self.site_data.get_individual_length()})
 
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
         logger.info("in fitness calc")
@@ -169,14 +187,29 @@ class EAEngine:
         individual = individual[:, :-1, :]  # remove last extra layer that was used for concat only
         return creator.Individual(individual)
 
-    def run(self, population_size, num_generations, crossover_probability, mutation_probability, verbose=__debug__):
+    def set_selection_method(self, method_id, params: Dict):
+        self.toolbox.register("select", self.SELECTION_METHODS[method_id], **params)
+
+    def set_crossover_method(self, method_id, params: Dict):
+        probability = params.get("probability", None)  # this is required, but we cannot enforce
+        self.crossover_probability = P_CROSSOVER if probability is None else probability
+        params["probability"] = self.crossover_probability
+        self.toolbox.register("mate", self.CROSSOVER_METHODS[method_id], **params)
+
+    def add_mutation(self, mutation_id, params: Dict):
+        probability = params.get("probability", None)  # this is required, but we cannot enforce
+        self.mutation_probability = P_MUTATION if probability is None else probability
+        params["probability"] = self.mutation_probability
+        self.toolbox.register("mutate", self.MUTATIONS[mutation_id], **params)
+
+    def run(self, verbose=__debug__):
         """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that
         hall_of_fame is used to implement an elitism mechanism. The individuals contained in the
         hall_of_fame are directly injected into the next generation and are not subject to the
         genetic operators of selection, crossover and mutation.
         """
 
-        population = self.toolbox.population_creator(n=population_size)
+        population = self.toolbox.population_creator(n=self.population_size)
 
         self.logbook.header = ['gen', 'nevals'] + (self.stats.fields if self.stats else [])
 
@@ -198,13 +231,13 @@ class EAEngine:
             print(self.logbook.stream)
 
         # Begin the generational process
-        for gen in range(1, num_generations + 1):
+        for gen in range(1, self.num_generations + 1):
 
             # Select the next generation individuals
             offspring = self.toolbox.select(population, len(population) - hof_size)
 
             # Vary the pool of individuals
-            offspring = algorithms.varAnd(offspring, self.toolbox, crossover_probability, mutation_probability)
+            offspring = algorithms.varAnd(offspring, self.toolbox, self.crossover_probability, self.mutation_probability)
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -228,4 +261,10 @@ class EAEngine:
                 print(self.logbook.stream)
 
         return population
+
+    def set_population_size(self, size):
+        self.population_size = size
+
+    def set_num_generations(self, generations):
+        self.num_generations = generations
 
