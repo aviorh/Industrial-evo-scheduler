@@ -19,9 +19,7 @@ def add_mutation_method(body, problem_id):
     mutation_params = body['mutation_parameters']
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
-
-    problem.engine.add_mutation(mutation_id, mutation_params)
+    problem = am.add_mutation(problem_id, mutation_id, mutation_params)
     return problem.to_json()
 
 
@@ -105,9 +103,7 @@ def edit_crossover_method(body, problem_id):
     crossover_params = body['crossover_parameters']
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
-
-    problem.engine.set_crossover_method(crossover_id, crossover_params)
+    problem = am.det_crossover_method(problem_id, crossover_id, crossover_params)
 
     return problem.to_json()
 
@@ -127,9 +123,7 @@ def edit_ea_population_size(body, problem_id):
     population_size = body['population_size']
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
-    problem.engine.set_population_size(population_size)
-
+    problem = am.set_population_size(problem_id, population_size)
     return problem.to_json()
 
 
@@ -166,8 +160,7 @@ def edit_num_ea_generation(body, problem_id):
     max_generations = body['generations']
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
-    problem.engine.set_num_generations(max_generations)
+    problem = am.set_num_of_generations(problem_id, max_generations)
 
     return problem.to_json()
 
@@ -188,9 +181,7 @@ def edit_selection_method(body, problem_id):
     selection_params = body['selection_parameters']
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
-
-    problem.engine.set_selection_method(selection_id, selection_params)
+    problem = am.set_selection_method(problem_id, selection_id, selection_params)
 
     return problem.to_json()
 
