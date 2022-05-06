@@ -2,6 +2,11 @@
 
 ## [ 06.05.2022, 15:28 ]
 
+### Added
+- engine is now a Thread subclass, where run() is the function to execute the ea algorithm
+- endpoints:
+  - engine start, pause, resume
+
 ### Fixed
 - fixed issue with site data parser
 - fixed issues with engine.run()

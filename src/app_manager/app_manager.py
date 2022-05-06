@@ -101,5 +101,12 @@ class AppManager(metaclass=SingletonMeta):
 
     def start_running(self, problem_id):
         problem = self.get_problem_by_id(problem_id)
-        problem.engine.run()
-        return problem.engine.hall_of_fame.items[0]
+        problem.engine.start()
+
+    def pause_problem(self, problem_id):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.pause()
+
+    def resume_problem(self, problem_id):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.resume()

@@ -276,19 +276,6 @@ def get_sites_data():
     return 'do some magic!'
 
 
-def pause_ea(problem_id):
-    """pause ea for this problem
-
-   
-
-    :param problem_id: Numeric ID to get problem
-    :type problem_id: int
-
-    :rtype: object
-    """
-    return 'do some magic!'
-
-
 def remove_mutation(problem_id, mutation_id):
     """remove mutation
 
@@ -313,8 +300,8 @@ def start_ea(problem_id):
     """
 
     am = AppManager()
-    best_solution = am.start_running(problem_id)
-    return {"fitness": float(best_solution.fitness.values[0])}
+    am.start_running(problem_id)
+    return "Started"
 
 
 def stop_ea(problem_id):
@@ -328,6 +315,28 @@ def stop_ea(problem_id):
     :rtype: object
     """
     return 'do some magic!'
+
+
+def pause_ea(problem_id):
+    """pause ea for this problem
+    :param problem_id: Numeric ID to get problem
+    :type problem_id: int
+    :rtype: object
+    """
+    am = AppManager()
+    am.pause_problem(problem_id)
+    return 'Problem calculation paused'
+
+
+def resume_ea(problem_id):
+    """resume ea for this problem
+    :param problem_id: Numeric ID to get problem
+    :type problem_id: int
+    :rtype: object
+    """
+    am = AppManager()
+    am.resume_problem(problem_id)
+    return 'Problem calculation resumed'
 
 
 def update_current_ea_solution(problem_id):

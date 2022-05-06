@@ -1,5 +1,6 @@
 import logging
 import random
+import threading
 from typing import Tuple, Union, Any, Dict
 
 import numpy as np
@@ -12,10 +13,11 @@ from src.site_data_parser.data_classes import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
 from src.genetic_engine.tools.mutation import mutFlipBit
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class EAEngine:
+class EAEngine(threading.Thread):
     SELECTION_METHODS = {
         0: tools.selTournament
     }
@@ -31,7 +33,12 @@ class EAEngine:
     DEFAULT_MUTATION_INDEX = 0
 
     def __init__(self, site_data: SiteData):
-        """order of initialization matters"""
+        threading.Thread.__init__(self)
+        # ~~~~~~ threading related members
+        self.paused = False
+        self.pause_cond = threading.Condition(threading.Lock())
+
+        # ~~~~~~ EA related members (order of initialization matters)
         np.random.seed(RANDOM_SEED)
 
         self.site_data = site_data
@@ -66,6 +73,14 @@ class EAEngine:
 
         self.set_num_generations(generations=MAX_GENERATIONS)
 
+        self.final_population = None
+
+    def set_population_size(self, size):
+        self.population_size = size
+
+    def set_num_generations(self, generations):
+        self.num_generations = generations
+
     def _prepare_population_creator(self):
         # create the population operator to generate a list of individuals:
         self.toolbox.register("population_creator", tools.initRepeat, list, self.toolbox.individual_creator)
@@ -82,7 +97,6 @@ class EAEngine:
         self.add_mutation(self.DEFAULT_MUTATION_INDEX, params={'indpb': 1.0 / self.site_data.get_individual_length()})
 
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
-        logger.info("in fitness calc")
         production_line_halb_compliance = self.constraints_manager.production_line_halb_compliance(schedule=individual)
         forecast_compliance = self.constraints_manager.overall_forecast_compliance_violations(schedule=individual)
         # sufficient_packaging_material = self.constraints_manager.sufficient_packaging_material(schedule=individual)
@@ -201,13 +215,43 @@ class EAEngine:
         self.mutation_probability = P_MUTATION if probability is None else probability
         self.toolbox.register("mutate", self.MUTATIONS[mutation_id], **params)
 
-    def run(self, verbose=__debug__):
+    def _perform_single_generation(self, population, gen, hof_size, verbose):
+        """Begin single generational process"""
+        # Select the next generation individuals
+        offspring = self.toolbox.select(population, len(population) - hof_size)
+
+        # Vary the pool of individuals
+        offspring = algorithms.varAnd(offspring, self.toolbox, self.crossover_probability, self.mutation_probability)
+
+        # Evaluate the individuals with an invalid fitness
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fitnesses = self.toolbox.map(self.toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+
+        # add the best back to population:
+        offspring.extend(self.hall_of_fame.items)
+
+        # Update the hall of fame with the generated individuals
+        self.hall_of_fame.update(offspring)
+
+        # Replace the current population by the offspring
+        population[:] = offspring
+
+        # Append the current generation statistics to the logbook
+        record = self.stats.compile(population) if self.stats else {}
+        self.logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+        if verbose:
+            logger.info(self.logbook.stream)
+
+    def run(self):
         """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that
         hall_of_fame is used to implement an elitism mechanism. The individuals contained in the
         hall_of_fame are directly injected into the next generation and are not subject to the
         genetic operators of selection, crossover and mutation.
         """
-
+        verbose = __debug__
+        logger.info(f"thread {self.ident} started")
         population = self.toolbox.population_creator(n=self.population_size)
 
         self.logbook.header = ['gen', 'nevals'] + (self.stats.fields if self.stats else [])
@@ -229,41 +273,26 @@ class EAEngine:
         if verbose:
             print(self.logbook.stream)
 
-        # Begin the generational process
         for gen in range(1, self.num_generations + 1):
+            with self.pause_cond:
+                while self.paused:
+                    self.pause_cond.wait()
+                self._perform_single_generation(population, gen, hof_size, verbose)
 
-            # Select the next generation individuals
-            offspring = self.toolbox.select(population, len(population) - hof_size)
+        self.final_population = population
 
-            # Vary the pool of individuals
-            offspring = algorithms.varAnd(offspring, self.toolbox, self.crossover_probability, self.mutation_probability)
+    def pause(self):
+        logger.info(f"thread {self.ident} paused")
+        self.paused = True
+        # If in sleep, we acquire immediately, otherwise we wait for thread
+        # to release condition. In race, worker will still see self.paused
+        # and begin waiting until it's set back to False
+        self.pause_cond.acquire()
 
-            # Evaluate the individuals with an invalid fitness
-            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            fitnesses = self.toolbox.map(self.toolbox.evaluate, invalid_ind)
-            for ind, fit in zip(invalid_ind, fitnesses):
-                ind.fitness.values = fit
-
-            # add the best back to population:
-            offspring.extend(self.hall_of_fame.items)
-
-            # Update the hall of fame with the generated individuals
-            self.hall_of_fame.update(offspring)
-
-            # Replace the current population by the offspring
-            population[:] = offspring
-
-            # Append the current generation statistics to the logbook
-            record = self.stats.compile(population) if self.stats else {}
-            self.logbook.record(gen=gen, nevals=len(invalid_ind), **record)
-            if verbose:
-                print(self.logbook.stream)
-
-        return population
-
-    def set_population_size(self, size):
-        self.population_size = size
-
-    def set_num_generations(self, generations):
-        self.num_generations = generations
-
+    def resume(self):
+        logger.info(f"thread {self.ident} resumed")
+        self.paused = False
+        # Notify so thread will wake after lock released
+        self.pause_cond.notify()
+        # Now release the lock
+        self.pause_cond.release()

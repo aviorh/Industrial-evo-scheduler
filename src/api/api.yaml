@@ -420,10 +420,6 @@ paths:
       responses:
         '200':
           description: algorithm started
-          content:
-            application/json:
-              schema:
-                type: object
       x-codegen-request-body-name: body
   /problem/{problem_id}/pause:
     post:
@@ -439,10 +435,21 @@ paths:
       responses:
         '200':
           description: algorithm paused
-          content:
-            application/json:
-              schema:
-                type: object
+      x-codegen-request-body-name: body
+  /problem/{problem_id}/resume:
+    post:
+      summary: resume ea for this problem
+      operationId: src.api.api.resume_ea
+      parameters:
+        - in: path
+          name: problem_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to get problem
+      responses:
+        '200':
+          description: algorithm resumed
       x-codegen-request-body-name: body
   /problem/{problem_id}/stop:
     post:
@@ -458,10 +465,6 @@ paths:
       responses:
         '200':
           description: algorithm stopped
-          content:
-            application/json:
-              schema:
-                type: object
       x-codegen-request-body-name: body
   /problem/{problem_id}/progress:
     get:
