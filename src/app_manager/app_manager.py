@@ -79,7 +79,7 @@ class AppManager(metaclass=SingletonMeta):
         problem.engine.add_mutation(mutation_id, mutation_params)
         return problem
 
-    def det_crossover_method(self, problem_id, crossover_id, crossover_params):
+    def set_crossover_method(self, problem_id, crossover_id, crossover_params):
         problem = self.get_problem_by_id(problem_id)
         problem.engine.set_crossover_method(crossover_id, crossover_params)
         return problem
@@ -98,3 +98,8 @@ class AppManager(metaclass=SingletonMeta):
         problem = self.get_problem_by_id(problem_id)
         problem.engine.set_selection_method(selection_id, selection_params)
         return problem
+
+    def start_running(self, problem_id):
+        problem = self.get_problem_by_id(problem_id)
+        problem.engine.run()
+        return problem.engine.hall_of_fame.items[0]

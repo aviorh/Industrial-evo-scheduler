@@ -12,7 +12,7 @@ class SiteDataParser:
         content = file.read()
         data_dict = json.loads(content)
         data_dict['id'] = id
-        site_data = SiteData(**data_dict)
+        site_data = SiteData.from_dict(data_dict)
         return site_data
 
 

@@ -1,3 +1,12 @@
+
+
+## [ 06.05.2022, 15:28 ]
+
+### Fixed
+- fixed issue with site data parser
+- fixed issues with engine.run()
+
+
 ## [ 05.05.2022, 19:45 ]
 
 ### Added

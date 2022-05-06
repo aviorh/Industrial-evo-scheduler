@@ -87,7 +87,8 @@ class EAEngine:
         forecast_compliance = self.constraints_manager.overall_forecast_compliance_violations(schedule=individual)
         # sufficient_packaging_material = self.constraints_manager.sufficient_packaging_material(schedule=individual)
         sufficient_packaging_material = 0
-        ensure_minimal_transition_time = self.constraints_manager.ensure_minimal_transition_time(schedule=individual)
+        # ensure_minimal_transition_time = self.constraints_manager.ensure_minimal_transition_time(schedule=individual)
+        ensure_minimal_transition_time = 0
         regular_hours_exceeded_violations = self.constraints_manager.count_regular_hours_exceeded_violations(schedule=individual)
 
         invalid_scheduling_violations = production_line_halb_compliance  # sum all invalid violations
@@ -193,13 +194,11 @@ class EAEngine:
     def set_crossover_method(self, method_id, params: Dict):
         probability = params.get("probability", None)  # this is required, but we cannot enforce
         self.crossover_probability = P_CROSSOVER if probability is None else probability
-        params["probability"] = self.crossover_probability
         self.toolbox.register("mate", self.CROSSOVER_METHODS[method_id], **params)
 
     def add_mutation(self, mutation_id, params: Dict):
         probability = params.get("probability", None)  # this is required, but we cannot enforce
         self.mutation_probability = P_MUTATION if probability is None else probability
-        params["probability"] = self.mutation_probability
         self.toolbox.register("mutate", self.MUTATIONS[mutation_id], **params)
 
     def run(self, verbose=__debug__):

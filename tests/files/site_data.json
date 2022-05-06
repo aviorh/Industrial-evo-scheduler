@@ -2,34 +2,34 @@
     "production_lines": [
         {
             "id": 0,
-            "productIds": {
+            "product_ids": {
                 "0": 300,
                 "1": 400,
                 "2": 500,
                 "3": 250
             },
             "manpower": 10,
-            "setupTime": 1.5,
+            "setup_time": 1.5,
             "ffo": 4
         },
         {
             "id": 1,
-            "productIds": {
+            "product_ids": {
                 "0": 800,
                 "1": 250,
                 "3": 450
             },
             "manpower": 12,
-            "setupTime": 0.5,
+            "setup_time": 0.5,
             "ffo": 3
         },
         {
             "id": 2,
-            "productIds": {
+            "product_ids": {
                 "2": 350
             },
             "manpower": 6,
-            "setupTime": 1.0,
+            "setup_time": 1.0,
             "ffo": 5
         }
     ],

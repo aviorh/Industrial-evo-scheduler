@@ -148,7 +148,7 @@ class ConstraintsManager:
             num_production_hours = _sched.sum() - (num_transitions * bulk_transition_time)
 
             prod_line = self.site_manager.production_lines[i]
-            amount_kg = prod_line.productIds.get(j, 0) * num_production_hours
+            amount_kg = prod_line.product_ids.get(str(j), 0) * num_production_hours
             current_amount[j] += amount_kg
         return current_amount
 
@@ -157,7 +157,7 @@ class ConstraintsManager:
 
         accepted_products_per_line = [0 for _ in range(self.num_production_lines)]
         for i, line in enumerate(self.site_manager.production_lines):
-            accepted_products_per_line[i] = list(line.productIds.keys())
+            accepted_products_per_line[i] = list(line.product_ids.keys())
 
         num_violations = 0
         for i, j in np.ndindex(self.num_production_lines, self.num_products):

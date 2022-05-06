@@ -103,7 +103,7 @@ def edit_crossover_method(body, problem_id):
     crossover_params = body['crossover_parameters']
 
     am = AppManager()
-    problem = am.det_crossover_method(problem_id, crossover_id, crossover_params)
+    problem = am.set_crossover_method(problem_id, crossover_id, crossover_params)
 
     return problem.to_json()
 
@@ -306,15 +306,15 @@ def remove_mutation(problem_id, mutation_id):
 
 def start_ea(problem_id):
     """start ea for this problem
-
-   
-
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
 
     :rtype: object
     """
-    return 'do some magic!'
+
+    am = AppManager()
+    best_solution = am.start_running(problem_id)
+    return {"fitness": float(best_solution.fitness.values[0])}
 
 
 def stop_ea(problem_id):

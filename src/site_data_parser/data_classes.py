@@ -3,7 +3,7 @@ import numpy as np
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
-
+from dacite import from_dict
 
 @dataclass
 class Base:
@@ -14,9 +14,9 @@ class Base:
 @dataclass
 class ProductionLine(Base):
     id: int
-    productIds: Dict[int, float]  # bulk product id to capacity (kg/hour) per product. might need packaging capacity
+    product_ids: Dict[str, float]  # bulk product id to capacity (kg/hour) per product. might need packaging capacity
     manpower: int
-    setupTime: float  # time to setup the production line once per day of work
+    setup_time: float  # time to setup the production line once per day of work
     ffo: int
 
 
@@ -25,9 +25,9 @@ class ProductionLine(Base):
 class BulkProduct(Base):
     """Bissli Grill"""
     id: int
-    recipeId: int
-    transitionTime: float  # when transitioning between different HALBs.
-    productionLineIds: List[int]  # production lines that can produce this bulk product
+    recipe_id: int
+    transition_time: float  # when transitioning between different HALBs.
+    production_line_ids: List[int]  # production lines that can produce this bulk product
 
 
 @dataclass_json
@@ -49,7 +49,6 @@ class Product(Base):
         return (self.weight * ((self.forecast - self.stock) * 1000)) / 1000.0
 
 
-@dataclass_json
 @dataclass
 class SiteData:
     # def __init__(self, production_lines: List[ProductionLine], products: List[Product], bulk_products: List[BulkProduct],
@@ -81,10 +80,14 @@ class SiteData:
     shift_duration: int
     total_working_hours: int
 
-    recipes: Dict[int, Dict]
+    recipes: Dict[str, Dict]
     raw_materials_stock: Dict[str, int]
-    product_packaging_unit: Dict[int, int]
-    retailer_packaging_unit: Dict[int, Tuple[int, int]]
+    product_packaging_unit: Dict[str, int]
+    retailer_packaging_unit: Dict[str, int]
+
+    @classmethod
+    def from_dict(cls, data):
+        return from_dict(data_class=cls, data=data)
 
     def get_individual_dimensions(self):
         """
