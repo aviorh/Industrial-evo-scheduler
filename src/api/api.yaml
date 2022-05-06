@@ -363,9 +363,13 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                cond_id:
                   type: integer
                   format: int32
+                bound:
+                  oneOf:
+                    - type: integer
+                    - type: string
       responses:
         '200':
           description: stopping-condition added
@@ -377,7 +381,7 @@ paths:
   /problem/{problem_id}/stopping-condition/{cond_id}:
     put:
       summary: set stopping-condition size for EA to run
-      operationId: src.api.api.edit_stopping_condition
+      operationId: src.api.api.set_stopping_condition
       parameters:
         - in: path
           name: problem_id
@@ -397,10 +401,46 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                site_data_id:
+                  type: integer
+                  format: int32
         required: true
       responses:
         '200':
           description: population size modified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cond_id:
+                    type: integer
+                    format: int32
+                  bound:
+                    oneOf:
+                      - type: integer
+                      - type: string
+      x-codegen-request-body-name: body
+    delete:
+      summary: delete stopping condition
+      operationId: src.api.api.delete_stopping_condition
+      parameters:
+        - in: path
+          name: problem_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to get problem
+        - in: path
+          name: cond_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to get stopping-condition
+      responses:
+        '200':
+          description: stopping-condition deleted
           content:
             application/json:
               schema:

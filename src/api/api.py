@@ -39,6 +39,7 @@ def add_problem(body):
     return app_manager.create_problem(site_data_id=site_data_id)
 
 
+# this endpoint is probably redundant, since we can use set instead (stopping conditions are set by default
 def add_stopping_condition(problem_id, body=None):
     """add new stopping condition
     :param problem_id: Numeric ID to get problem
@@ -50,6 +51,19 @@ def add_stopping_condition(problem_id, body=None):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
+    return 'do some magic!'
+
+
+def delete_stopping_condition(problem_id, cond_id):
+    """delete stopping condition
+
+    :param problem_id: Numeric ID to get problem
+    :param cond_id: int
+    :return:
+    """
+
+    am = AppManager()
+    am.delete_stopping_condition(problem_id, cond_id)
     return 'do some magic!'
 
 
@@ -186,7 +200,7 @@ def edit_selection_method(body, problem_id):
     return problem.to_json()
 
 
-def edit_stopping_condition(body, problem_id, cond_id):
+def set_stopping_condition(body, problem_id, cond_id):
     """set stopping-condition size for EA to run
 
    
@@ -202,6 +216,9 @@ def edit_stopping_condition(body, problem_id, cond_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
+
+    am = AppManager()
+    am.set_stopping_condition(problem_id, cond_id, body['bound'])
     return 'do some magic!'
 
 

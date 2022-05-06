@@ -6,7 +6,7 @@ matplotlib>=3.5.1
 seaborn>=0.11.2
 connexion >= 2.6.0
 connexion[swagger-ui] >= 2.6.0
-python_dateutil == 2.6.0
+python_dateutil >= 2.7.0
 swagger-ui-bundle >= 0.0.2
 sqlalchemy
 dacite
