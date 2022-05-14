@@ -16,11 +16,11 @@ def add_mutation_method(body, problem_id):
         body = connexion.request.get_json()
 
     mutation_id = body['mutation_id']
-    mutation_params = body['mutation_parameters']
+    mutation_params = body.get('mutation_parameters', dict())
 
     am = AppManager()
     problem = am.add_mutation(problem_id, mutation_id, mutation_params)
-    return problem.to_json()
+    return problem.to_dict_format()
 
 
 def add_problem(body):
@@ -36,7 +36,8 @@ def add_problem(body):
     app_manager = AppManager()
     site_data_id = body['site_data_id']
 
-    return app_manager.create_problem(site_data_id=site_data_id)
+    new_problem = app_manager.create_problem(site_data_id=site_data_id)
+    return new_problem.to_dict_format()
 
 
 # this endpoint is probably redundant, since we can use set instead (stopping conditions are set by default
@@ -114,12 +115,12 @@ def edit_crossover_method(body, problem_id):
     if connexion.request.is_json:
         body = connexion.request.get_json()
     crossover_id = body['crossover_id']
-    crossover_params = body['crossover_parameters']
+    crossover_params = body.get('crossover_parameters', dict())
 
     am = AppManager()
     problem = am.set_crossover_method(problem_id, crossover_id, crossover_params)
 
-    return problem.to_json()
+    return problem.to_dict_format()
 
 
 def edit_ea_population_size(body, problem_id):
@@ -138,7 +139,7 @@ def edit_ea_population_size(body, problem_id):
 
     am = AppManager()
     problem = am.set_population_size(problem_id, population_size)
-    return problem.to_json()
+    return problem.to_dict_format()
 
 
 def edit_mutation_method(body, problem_id, mutation_id):
@@ -176,12 +177,11 @@ def edit_num_ea_generation(body, problem_id):
     am = AppManager()
     problem = am.set_num_of_generations(problem_id, max_generations)
 
-    return problem.to_json()
+    return problem.to_dict_format()
 
 
 def edit_selection_method(body, problem_id):
     """change selection method for specific problem
-
     :param body: selection configuration
     :type body: dict | bytes
     :param problem_id: Numeric ID to get problem
@@ -192,12 +192,12 @@ def edit_selection_method(body, problem_id):
     if connexion.request.is_json:
         body = connexion.request.get_json()
     selection_id = body['selection_id']
-    selection_params = body['selection_parameters']
+    selection_params = body.get('selection_parameters', dict())
 
     am = AppManager()
     problem = am.set_selection_method(problem_id, selection_id, selection_params)
 
-    return problem.to_json()
+    return problem.to_dict_format()
 
 
 def set_stopping_condition(body, problem_id, cond_id):
@@ -258,7 +258,7 @@ def get_problem_by_id(problem_id):
     app_manager = AppManager()
     problem = app_manager.get_problem_by_id(problem_id)
 
-    return problem.to_json()
+    return problem.to_dict_format()
 
 
 def get_problems():

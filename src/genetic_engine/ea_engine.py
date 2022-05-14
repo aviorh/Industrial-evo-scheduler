@@ -7,6 +7,7 @@ from typing import Tuple, Union, Any, Dict
 import numpy as np
 from deap import tools, algorithms, creator, base
 
+from src.app_manager.engine_facade import EAEngineFacade
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION
@@ -83,6 +84,15 @@ class EAEngine(threading.Thread):
             "FITNESS_STOPPING_CONDITION": StoppingCondition(False, 0),
             "GENERATIONS_STOPPING_CONDITION": StoppingCondition(True, 200)
         }
+
+    def to_dict(self):
+        return EAEngineFacade(
+            max_generations=self.num_generations,
+            population_size=self.population_size,
+            selection_method=self.toolbox.select.func.__name__,
+            crossover_method=self.toolbox.mate.func.__name__,
+            mutations=self.toolbox.mutate.func.__name__
+        )
 
     def set_population_size(self, size):
         self.population_size = size
@@ -215,16 +225,21 @@ class EAEngine(threading.Thread):
 
     def set_selection_method(self, method_id, params: Dict):
         self.toolbox.register("select", self.SELECTION_METHODS[method_id], **params)
+        logger.info(f"Selection method changed to {self.SELECTION_METHODS[method_id].__name__}")
 
     def set_crossover_method(self, method_id, params: Dict):
-        probability = params.get("probability", None)  # this is required, but we cannot enforce
+        # probability is required for the algorithm and not for a specific method
+        probability = params.pop("probability", None)
         self.crossover_probability = P_CROSSOVER if probability is None else probability
         self.toolbox.register("mate", self.CROSSOVER_METHODS[method_id], **params)
+        logger.info(f"Crossover method changed to {self.CROSSOVER_METHODS[method_id].__name__}")
 
     def add_mutation(self, mutation_id, params: Dict):
-        probability = params.get("probability", None)  # this is required, but we cannot enforce
+        # probability is required for the algorithm and not for a specific method
+        probability = params.pop("probability", None)
         self.mutation_probability = P_MUTATION if probability is None else probability
         self.toolbox.register("mutate", self.MUTATIONS[mutation_id], **params)
+        logger.info(f"Mutation Added {self.MUTATIONS[mutation_id].__name__}")
 
     def _perform_single_generation(self, population, gen, hof_size, verbose):
         """Begin single generational process"""

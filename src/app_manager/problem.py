@@ -27,8 +27,12 @@ class Problem:
     creation_time: str = field(default_factory=_get_datetime_str)
     schedule: str = None  # json? dict?
 
-    def to_json(self):
-        dikt = asdict(self)
-        del dikt['schedule']
-        return dikt
-
+    def to_dict_format(self):
+        return {
+            "id": self.id,
+            "site_data_id": self.site_data_id,
+            "engine": self.engine.to_dict(),
+            "description": self.description,
+            "creation_time": self.creation_time,
+            "schedule": None
+        }

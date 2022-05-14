@@ -2,6 +2,12 @@
 
 ## [ 06.05.2022, 15:28 ]
 
+### Fixed
+- fix serialize for `Problem` class
+
+
+## [ 06.05.2022, 15:28 ]
+
 ### Added
 - engine is now a Thread subclass, where run() is the function to execute the ea algorithm
 - endpoints:
