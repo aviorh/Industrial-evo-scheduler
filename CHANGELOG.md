@@ -1,3 +1,13 @@
+## [ 21.05.2022, 21:54]
+
+### Added
+- get progress endpoint
+
+### Fixed
+- algorithm loop condition
+
+### removed
+- editing number of generations endpoint  
 
 
 ## [ 21.05.2022, 19:27]
