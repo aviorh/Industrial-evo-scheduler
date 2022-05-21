@@ -304,25 +304,27 @@ class EAEngine(threading.Thread):
         for gen in range(1, self.num_generations + 1):
             cur_fitness = self.hall_of_fame.items[0].fitness.values[0]
             self.calculate_stopping_conditions(gen, cur_fitness, time.time() - start_time - paused_total_time)
-            with self.pause_cond:
-                while self.paused:
-                    paused_time = time.time()
-                    self.pause_cond.wait()
-                    paused_total_time += (time.time() - paused_time)
-                self._perform_single_generation(population, gen, hof_size, verbose)
+            while self.paused:
+                paused_time = time.time()
+                self.pause_cond.wait()
+                self.pause_cond.release()
+                paused_total_time += (time.time() - paused_time)
+                logger.info(f'paused total time: {paused_total_time}')
+            self._perform_single_generation(population, gen, hof_size, verbose)
 
         return self.hall_of_fame.items
 
     def pause(self):
         logger.info(f"thread {self.ident} paused")
-        self.paused = True
+        self.pause_cond.acquire()
         # If in sleep, we acquire immediately, otherwise we wait for thread
         # to release condition. In race, worker will still see self.paused
         # and begin waiting until it's set back to False
-        self.pause_cond.acquire()
+        self.paused = True
 
     def resume(self):
         logger.info(f"thread {self.ident} resumed")
+        self.pause_cond.acquire()
         self.paused = False
         # Notify so thread will wake after lock released
         self.pause_cond.notify()

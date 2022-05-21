@@ -360,9 +360,9 @@ paths:
         - in: path
           name: cond_id
           schema:
-            type: integer
+            type: string
           required: true
-          description: Numeric ID to get stopping-condition
+          description: string ID to get stopping-condition
       requestBody:
         content:
           application/json:
