@@ -522,3 +522,41 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
+  /problem/{problem_id}/fitness-logbook:
+    get:
+      summary: get fitness logbook for this problem
+      operationId: src.api.api.get_fitness_logbook
+      parameters:
+        - in: path
+          name: problem_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to get problem
+      responses:
+        '200':
+          description: get fitness logbook
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+  /problem/{problem_id}/fitness-graph:
+    get:
+      summary: get fitness graph for this problem
+      operationId: src.api.api.get_fitness_graph
+      parameters:
+        - in: path
+          name: problem_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to get problem
+      responses:
+        '200':
+          description: get fitness graph
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body

@@ -126,8 +126,8 @@ class EAEngine(threading.Thread):
     @staticmethod
     def _prepare_statistics_object():
         stats = tools.Statistics(lambda ind: ind.fitness.values)
-        stats.register("min", np.min)
-        stats.register("avg", np.mean)
+        stats.register("min_fitness", np.min)
+        stats.register("avg_fitness", np.mean)
 
         return stats
 
@@ -269,7 +269,7 @@ class EAEngine(threading.Thread):
         logger.info(f"thread {self.ident} started")
         population = self.toolbox.population_creator(n=self.population_size)
 
-        self.logbook.header = ['gen', 'nevals'] + (self.stats.fields if self.stats else [])
+        self.logbook.header = ['generation', 'nevals'] + (self.stats.fields if self.stats else [])
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in population if not ind.fitness.valid]
@@ -284,9 +284,9 @@ class EAEngine(threading.Thread):
         hof_size = len(self.hall_of_fame.items) if self.hall_of_fame.items else 0
 
         record = self.stats.compile(population) if self.stats else {}
-        self.logbook.record(gen=0, nevals=len(invalid_ind), **record)
+        self.logbook.record(generation=0, nevals=len(invalid_ind), **record)
         if verbose:
-            print(self.logbook.stream)
+            logger.info(self.logbook.stream)
 
         for gen in range(1, self.num_generations + 1):
             with self.pause_cond:
