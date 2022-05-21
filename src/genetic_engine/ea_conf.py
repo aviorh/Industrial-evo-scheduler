@@ -17,7 +17,7 @@ INVALID_SCHEDULING_PENALTY = 100
 POPULATION_SIZE = 300
 P_CROSSOVER = 0.9  # probability for crossover
 P_MUTATION = 0.1   # probability for mutating an individual
-MAX_GENERATIONS = 80
+MAX_GENERATIONS = 10
 HALL_OF_FAME_SIZE = 30
 
 # set the random seed:

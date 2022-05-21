@@ -1,3 +1,8 @@
+## [ 21.05.2022, 16:27]
+
+### Added
+- endpoints:
+  - get the current best solution (3D numpy array converted to json 3D array)
 
 
 ## [ 06.05.2022, 15:28 ]

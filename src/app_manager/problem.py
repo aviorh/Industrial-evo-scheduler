@@ -37,3 +37,8 @@ class Problem:
             "creation_time": self.creation_time,
             "schedule": None
         }
+
+    def get_current_best_solution(self):
+        # here we only read from HOF, so no need to worry about thread-safety
+        current_best_solution = self.engine.hall_of_fame.items[0]
+        return current_best_solution.tolist()

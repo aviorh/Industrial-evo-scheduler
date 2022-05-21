@@ -207,15 +207,13 @@ def edit_stopping_condition(body, problem_id, cond_id):
 
 def get_ea_best_solution(problem_id):
     """get current best solution
-
-   
-
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
-
     :rtype: object
     """
-    return 'do some magic!'
+    app_manager = AppManager()
+    problem = app_manager.get_problem_by_id(problem_id)
+    return problem.get_current_best_solution()
 
 
 def get_ea_progress(problem_id):
