@@ -338,12 +338,34 @@ def resume_ea(problem_id):
 
 def update_current_ea_solution(problem_id):
     """manually update solution
-
-   
-
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
 
     :rtype: object
     """
     return 'do some magic!'
+
+
+def get_fitness_logbook(problem_id):
+    """resume ea for this problem
+    :param problem_id: Numeric ID to get problem
+    :type problem_id: int
+    :rtype: object
+    """
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+
+    return problem.get_fitness_logbook()
+
+
+def get_fitness_graph(problem_id):
+    """resume ea for this problem
+    :param problem_id: Numeric ID to get problem
+    :type problem_id: int
+    :rtype: object
+    """
+
+    am = AppManager()
+    problem = am.get_problem_by_id(problem_id)
+    return problem.get_fitness_graph_as_img()
