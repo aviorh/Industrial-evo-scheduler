@@ -1,13 +1,12 @@
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from datetime import datetime
-
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from flask import send_file
 
 from src.genetic_engine.ea_engine import EAEngine
 from src.utils.file_utils import ROOT
-from flask import send_file
 
 
 def _get_datetime_str() -> str:
