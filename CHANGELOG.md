@@ -1,8 +1,19 @@
+
+
+## [ 21.05.2022, 19:27]
+
+### Added
+- endpoints:
+  - get fitness logbook
+  - get fitness graph
+
+
 ## [ 21.05.2022, 17:46 ]
 ### Fixed
 - fix thread pausing mechanism
 - api now receives string ids for stopping conditions instead of numbers
 - time bound conversion from minutes to seconds
+
 
 ## [ 21.05.2022, 16:27]
 

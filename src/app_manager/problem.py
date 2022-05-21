@@ -1,7 +1,12 @@
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from datetime import datetime
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from flask import send_file
+
 from src.genetic_engine.ea_engine import EAEngine
+from src.utils.file_utils import ROOT
 
 
 def _get_datetime_str() -> str:
@@ -41,3 +46,25 @@ class Problem:
         # here we only read from HOF, so no need to worry about thread-safety
         current_best_solution = self.engine.hall_of_fame.items[0]
         return current_best_solution.tolist()
+
+    def get_fitness_logbook(self):
+        # here we only read from logbook, so no need to worry about thread-safety
+        return self.engine.logbook
+
+    def get_fitness_graph_as_img(self):
+        # extract statistics:
+        min_fitness_values, mean_fitness_values = self.engine.logbook.select("min_fitness", "avg_fitness")
+
+        # plot statistics:
+        sns.set_style("whitegrid")
+        plt.plot(min_fitness_values, color='red')
+        plt.plot(mean_fitness_values, color='green')
+        plt.xlabel('Generation')
+        plt.ylabel('Min / Average Fitness')
+        plt.title('Min and Average fitness over Generations')
+
+        # save graph to file in backend local_database
+        graph_filepath = f"{ROOT}/graph{self.id}.png"
+        plt.savefig(graph_filepath)
+
+        return send_file(graph_filepath)
