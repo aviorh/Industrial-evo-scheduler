@@ -1,9 +1,14 @@
+## [ 21.05.2022, 17:46 ]
+### Fixed
+- fix thread pausing mechanism
+- api now receives string ids for stopping conditions instead of numbers
+- time bound conversion from minutes to seconds
+
 ## [ 21.05.2022, 16:27]
 
 ### Added
 - endpoints:
   - get the current best solution (3D numpy array converted to json 3D array)
-
 
 ## [ 06.05.2022, 15:28 ]
 

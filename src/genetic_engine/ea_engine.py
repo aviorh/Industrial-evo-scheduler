@@ -1,6 +1,7 @@
 import logging
 import random
 import threading
+import time
 from typing import Tuple, Union, Any, Dict
 
 import numpy as np
@@ -10,6 +11,7 @@ from src.app_manager.engine_facade import EAEngineFacade
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION
+from src.genetic_engine.stopping_condition import StoppingCondition
 from src.site_data_parser.data_classes import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
 from src.genetic_engine.tools.mutation import mutFlipBit
@@ -66,7 +68,8 @@ class EAEngine(threading.Thread):
         self._prepare_genetic_operators()
 
         self.constraints_manager = ConstraintsManager(site_manager=self.site_data,
-                                                      invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,  # INVALID_SCHEDULING_PENALTY,
+                                                      invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,
+                                                      # INVALID_SCHEDULING_PENALTY,
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
                                                       soft_constraints_penalty=SOFT_CONSTRAINT_PENALTY)
 
@@ -75,6 +78,12 @@ class EAEngine(threading.Thread):
         self.set_num_generations(generations=MAX_GENERATIONS)
 
         self.final_population = None
+
+        self.stopping_conditions_configuration = {
+            "TIME_STOPPING_CONDITION": StoppingCondition(False, 0),
+            "FITNESS_STOPPING_CONDITION": StoppingCondition(False, 0),
+            "GENERATIONS_STOPPING_CONDITION": StoppingCondition(True, 200)
+        }
 
     def to_dict(self):
         return EAEngineFacade(
@@ -113,7 +122,8 @@ class EAEngine(threading.Thread):
         sufficient_packaging_material = 0
         # ensure_minimal_transition_time = self.constraints_manager.ensure_minimal_transition_time(schedule=individual)
         ensure_minimal_transition_time = 0
-        regular_hours_exceeded_violations = self.constraints_manager.count_regular_hours_exceeded_violations(schedule=individual)
+        regular_hours_exceeded_violations = self.constraints_manager.count_regular_hours_exceeded_violations(
+            schedule=individual)
 
         invalid_scheduling_violations = production_line_halb_compliance  # sum all invalid violations
         hard_constraints_violations = forecast_compliance + ensure_minimal_transition_time  # sum all hard rules
@@ -205,7 +215,8 @@ class EAEngine(threading.Thread):
                                                   product_line_schedule.shape[1],
                                                   stacked_prods_schedule.shape[2]))
 
-        individual = np.concatenate([stacked_prods_schedule, product_line_schedule], axis=-1)  # concat together into a 3D array
+        individual = np.concatenate([stacked_prods_schedule, product_line_schedule],
+                                    axis=-1)  # concat together into a 3D array
         individual = np.moveaxis(individual, 0, 1)
         individual = np.moveaxis(individual, 1, 2)  # align dimensions to expected
 
@@ -288,26 +299,55 @@ class EAEngine(threading.Thread):
         if verbose:
             print(self.logbook.stream)
 
+        paused_total_time = 0
+        start_time = time.time()
         for gen in range(1, self.num_generations + 1):
-            with self.pause_cond:
-                while self.paused:
-                    self.pause_cond.wait()
-                self._perform_single_generation(population, gen, hof_size, verbose)
+            cur_fitness = self.hall_of_fame.items[0].fitness.values[0]
+            self.calculate_stopping_conditions(gen, cur_fitness, time.time() - start_time - paused_total_time)
+            while self.paused:
+                paused_time = time.time()
+                self.pause_cond.wait()
+                self.pause_cond.release()
+                paused_total_time += (time.time() - paused_time)
+                logger.info(f'paused total time: {paused_total_time}')
+            self._perform_single_generation(population, gen, hof_size, verbose)
 
-        self.final_population = population
+        return self.hall_of_fame.items
 
     def pause(self):
         logger.info(f"thread {self.ident} paused")
-        self.paused = True
+        self.pause_cond.acquire()
         # If in sleep, we acquire immediately, otherwise we wait for thread
         # to release condition. In race, worker will still see self.paused
         # and begin waiting until it's set back to False
-        self.pause_cond.acquire()
+        self.paused = True
 
     def resume(self):
         logger.info(f"thread {self.ident} resumed")
+        self.pause_cond.acquire()
         self.paused = False
         # Notify so thread will wake after lock released
         self.pause_cond.notify()
         # Now release the lock
         self.pause_cond.release()
+
+    def set_stopping_condition(self, cond_id: str, bound):
+        logger.info(f"Set stopping condition to {cond_id}, bound {bound}")
+        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=True, bound=bound)
+
+    def delete_stopping_condition(self, cond_id: str):
+        logger.info(f"delete stopping condition {cond_id}")
+        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=False, bound=0)
+
+    def calculate_stopping_conditions(self, generation, fitness, time):
+        should_stop = False
+        time_cond = self.stopping_conditions_configuration.get("TIME_STOPPING_CONDITION")
+        fitness_cond = self.stopping_conditions_configuration.get("FITNESS_STOPPING_CONDITION")
+        generations_cond = self.stopping_conditions_configuration.get("GENERATIONS_STOPPING_CONDITION")
+
+        should_stop = should_stop or (
+                        time_cond.bound < time and time_cond.applied) or (
+                        fitness_cond.bound > fitness and fitness_cond.applied) or (
+                        generations_cond.bound < generation and generations_cond.applied)
+
+        return should_stop

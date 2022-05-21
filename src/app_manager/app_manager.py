@@ -7,6 +7,7 @@ from src.site_data_parser.data_classes import SiteData
 from src.site_data_parser.site_data_parser import SiteDataParser
 from src.utils.singleton import SingletonMeta
 import src.utils.file_utils as file_utils
+from src.app_manager.consts import STOPPING_CONDITIONS
 
 
 class AppManager(metaclass=SingletonMeta):
@@ -110,3 +111,17 @@ class AppManager(metaclass=SingletonMeta):
     def resume_problem(self, problem_id):
         problem = self.get_problem_by_id(problem_id)
         problem.engine.resume()
+
+    def set_stopping_condition(self, problem_id, cond_id, bound):
+        problem = self.get_problem_by_id(problem_id)
+        cond_str_id = STOPPING_CONDITIONS.get(cond_id)
+        if cond_str_id == "TIME_STOPPING_CONDITION":
+            # minutes to seconds
+            bound = bound * 60
+        problem.engine.set_stopping_condition(cond_str_id, bound)
+        return cond_str_id
+
+    def delete_stopping_condition(self, problem_id, cond_id):
+        problem = self.get_problem_by_id(problem_id)
+        cond_str_id = STOPPING_CONDITIONS.get(cond_id)
+        problem.engine.delete_stopping_condition(cond_str_id)

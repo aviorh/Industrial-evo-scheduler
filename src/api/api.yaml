@@ -346,10 +346,10 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /problem/{problem_id}/stopping-condition:
-    post:
-      summary: add new stopping condition
-      operationId: src.api.api.add_stopping_condition
+  /problem/{problem_id}/stopping-condition/{cond_id}:
+    put:
+      summary: set stopping-condition size for EA to run
+      operationId: src.api.api.set_stopping_condition
       parameters:
         - in: path
           name: problem_id
@@ -357,27 +357,41 @@ paths:
             type: integer
           required: true
           description: Numeric ID to get problem
+        - in: path
+          name: cond_id
+          schema:
+            type: string
+          required: true
+          description: string ID to get stopping-condition
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                id:
-                  type: integer
-                  format: int32
+                bound:
+                  oneOf:
+                    - type: integer
+                    - type: string
       responses:
         '200':
-          description: stopping-condition added
+          description: population size modified successfully
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  cond_id:
+                    type: integer
+                    format: int32
+                  bound:
+                    oneOf:
+                      - type: integer
+                      - type: string
       x-codegen-request-body-name: body
-  /problem/{problem_id}/stopping-condition/{cond_id}:
-    put:
-      summary: set stopping-condition size for EA to run
-      operationId: src.api.api.edit_stopping_condition
+    delete:
+      summary: delete stopping condition
+      operationId: src.api.api.delete_stopping_condition
       parameters:
         - in: path
           name: problem_id
@@ -391,16 +405,9 @@ paths:
             type: integer
           required: true
           description: Numeric ID to get stopping-condition
-      requestBody:
-        description: stopping-condition configuration
-        content:
-          application/json:
-            schema:
-              type: object
-        required: true
       responses:
         '200':
-          description: population size modified successfully
+          description: stopping-condition deleted
           content:
             application/json:
               schema:

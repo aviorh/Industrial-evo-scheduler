@@ -40,17 +40,16 @@ def add_problem(body):
     return new_problem.to_dict_format()
 
 
-def add_stopping_condition(problem_id, body=None):
-    """add new stopping condition
-    :param problem_id: Numeric ID to get problem
-    :type problem_id: int
-    :param body: 
-    :type body: dict | bytes
+def delete_stopping_condition(problem_id, cond_id):
+    """delete stopping condition
 
-    :rtype: object
+    :param problem_id: Numeric ID to get problem
+    :param cond_id: int
+    :return:
     """
-    if connexion.request.is_json:
-        body = connexion.request.get_json()
+
+    am = AppManager()
+    am.delete_stopping_condition(problem_id, cond_id)
     return 'do some magic!'
 
 
@@ -186,11 +185,8 @@ def edit_selection_method(body, problem_id):
     return problem.to_dict_format()
 
 
-def edit_stopping_condition(body, problem_id, cond_id):
+def set_stopping_condition(body, problem_id, cond_id):
     """set stopping-condition size for EA to run
-
-   
-
     :param body: stopping-condition configuration
     :type body: dict | bytes
     :param problem_id: Numeric ID to get problem
@@ -202,7 +198,10 @@ def edit_stopping_condition(body, problem_id, cond_id):
     """
     if connexion.request.is_json:
         body = connexion.request.get_json()
-    return 'do some magic!'
+
+    am = AppManager()
+    stop_cond = am.set_stopping_condition(problem_id, cond_id, body['bound'])
+    return {"stopping_condition": stop_cond}
 
 
 def get_ea_best_solution(problem_id):
