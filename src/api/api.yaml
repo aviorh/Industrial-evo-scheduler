@@ -282,38 +282,6 @@ paths:
       responses:
         '200':
           description: mutation object deleted
-  /problem/{problem_id}/generations:
-    put:
-      summary: set num of generation for EA to run
-      operationId: src.api.api.edit_num_ea_generation
-      parameters:
-        - in: path
-          name: problem_id
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID to get problem
-      requestBody:
-        description: num generations
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                generations:
-                  type: integer
-                  format: int32
-              required:
-                - generations
-        required: true
-      responses:
-        '200':
-          description: ea num generations modified successfully
-          content:
-            application/json:
-              schema:
-                type: object
-      x-codegen-request-body-name: body
   /problem/{problem_id}/population:
     put:
       summary: set population size for EA to run

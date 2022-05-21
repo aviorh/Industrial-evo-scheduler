@@ -4,7 +4,7 @@ from typing import List
 
 @dataclass
 class EAEngineFacade:
-    max_generations: int
+    stopping_conditions: dict
     population_size: int
     selection_method: str
     crossover_method: str

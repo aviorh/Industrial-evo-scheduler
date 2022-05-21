@@ -90,11 +90,6 @@ class AppManager(metaclass=SingletonMeta):
         problem.engine.set_population_size(population_size)
         return problem
 
-    def set_num_of_generations(self, problem_id, num_of_generations):
-        problem = self.get_problem_by_id(problem_id)
-        problem.engine.set_num_generations(num_of_generations)
-        return problem
-
     def set_selection_method(self, problem_id, selection_id, selection_params):
         problem = self.get_problem_by_id(problem_id)
         problem.engine.set_selection_method(selection_id, selection_params)
@@ -125,3 +120,7 @@ class AppManager(metaclass=SingletonMeta):
         problem = self.get_problem_by_id(problem_id)
         cond_str_id = STOPPING_CONDITIONS.get(cond_id)
         problem.engine.delete_stopping_condition(cond_str_id)
+
+    def get_progress(self, problem_id):
+        problem = self.get_problem_by_id(problem_id)
+        return problem.engine.stopping_conditions_configuration

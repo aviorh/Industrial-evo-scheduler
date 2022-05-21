@@ -10,7 +10,7 @@ from deap import tools, algorithms, creator, base
 from src.app_manager.engine_facade import EAEngineFacade
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
-    HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, MAX_GENERATIONS, P_CROSSOVER, P_MUTATION
+    HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, DEFAULT_GENERATIONS, P_CROSSOVER, P_MUTATION
 from src.genetic_engine.stopping_condition import StoppingCondition
 from src.site_data_parser.data_classes import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
@@ -75,19 +75,17 @@ class EAEngine(threading.Thread):
 
         self.set_population_size(size=POPULATION_SIZE)
 
-        self.set_num_generations(generations=MAX_GENERATIONS)
-
         self.final_population = None
 
         self.stopping_conditions_configuration = {
-            "TIME_STOPPING_CONDITION": StoppingCondition(False, 0),
-            "FITNESS_STOPPING_CONDITION": StoppingCondition(False, 0),
-            "GENERATIONS_STOPPING_CONDITION": StoppingCondition(True, 200)
+            "TIME_STOPPING_CONDITION": StoppingCondition(applied=False, bound=0),
+            "FITNESS_STOPPING_CONDITION": StoppingCondition(applied=False, bound=0),
+            "GENERATIONS_STOPPING_CONDITION": StoppingCondition(applied=True, bound=DEFAULT_GENERATIONS)
         }
 
     def to_dict(self):
         return EAEngineFacade(
-            max_generations=self.num_generations,
+            stopping_conditions=self.stopping_conditions_configuration,
             population_size=self.population_size,
             selection_method=self.toolbox.select.func.__name__,
             crossover_method=self.toolbox.mate.func.__name__,
@@ -96,9 +94,6 @@ class EAEngine(threading.Thread):
 
     def set_population_size(self, size):
         self.population_size = size
-
-    def set_num_generations(self, generations):
-        self.num_generations = generations
 
     def _prepare_population_creator(self):
         # create the population operator to generate a list of individuals:
@@ -301,16 +296,19 @@ class EAEngine(threading.Thread):
 
         paused_total_time = 0
         start_time = time.time()
-        for gen in range(1, self.num_generations + 1):
+        generation = 1
+        cur_fitness = -1
+        while not self.should_finish(generation, cur_fitness, time.time() - start_time - paused_total_time):
             cur_fitness = self.hall_of_fame.items[0].fitness.values[0]
-            self.calculate_stopping_conditions(gen, cur_fitness, time.time() - start_time - paused_total_time)
             while self.paused:
                 paused_time = time.time()
                 self.pause_cond.wait()
                 self.pause_cond.release()
                 paused_total_time += (time.time() - paused_time)
                 logger.info(f'paused total time: {paused_total_time}')
-            self._perform_single_generation(population, gen, hof_size, verbose)
+
+            self._perform_single_generation(population, generation, hof_size, verbose)
+            generation += 1
 
         return self.hall_of_fame.items
 
@@ -339,7 +337,7 @@ class EAEngine(threading.Thread):
         logger.info(f"delete stopping condition {cond_id}")
         self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=False, bound=0)
 
-    def calculate_stopping_conditions(self, generation, fitness, time):
+    def should_finish(self, generation, fitness, time):
         should_stop = False
         time_cond = self.stopping_conditions_configuration.get("TIME_STOPPING_CONDITION")
         fitness_cond = self.stopping_conditions_configuration.get("FITNESS_STOPPING_CONDITION")
@@ -350,4 +348,20 @@ class EAEngine(threading.Thread):
                         fitness_cond.bound > fitness and fitness_cond.applied) or (
                         generations_cond.bound < generation and generations_cond.applied)
 
+        self.update_progress(time, fitness, generation)
+
         return should_stop
+
+    def update_progress(self, time, fitness, generation):
+        time_cond = self.stopping_conditions_configuration.get("TIME_STOPPING_CONDITION")
+        fitness_cond = self.stopping_conditions_configuration.get("FITNESS_STOPPING_CONDITION")
+        generations_cond = self.stopping_conditions_configuration.get("GENERATIONS_STOPPING_CONDITION")
+
+        time_cond.progress = time_cond.bound if time_cond.bound == 0 else round((time / time_cond.bound) * 100, 0)
+        generations_cond.progress = generations_cond.bound if generations_cond.bound == 0 \
+            else round((generation / generations_cond.bound) * 100, 0)
+        fitness_cond.progress = fitness_cond.bound if fitness_cond.bound == 0 else \
+            round((1 - (float(fitness) - fitness_cond.bound) / float(fitness)) * 100, 0)
+
+
+

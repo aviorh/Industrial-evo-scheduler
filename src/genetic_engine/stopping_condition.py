@@ -1,4 +1,8 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class StoppingCondition:
-    def __init__(self, applied: bool, bound):
-        self.applied = applied
-        self.bound = bound
+    applied: bool
+    bound: int
+    progress: int = 0

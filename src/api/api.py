@@ -145,26 +145,6 @@ def edit_mutation_method(body, problem_id, mutation_id):
     raise NotImplementedError("For now supporting only single mutation")
 
 
-def edit_num_ea_generation(body, problem_id):
-    """set num of generation for EA to run
-    :param body: num generations
-    :type body: dict | bytes
-    :param problem_id: Numeric ID to get problem
-    :type problem_id: int
-
-    :rtype: object
-    """
-    if connexion.request.is_json:
-        body = connexion.request.get_json()
-
-    max_generations = body['generations']
-
-    am = AppManager()
-    problem = am.set_num_of_generations(problem_id, max_generations)
-
-    return problem.to_dict_format()
-
-
 def edit_selection_method(body, problem_id):
     """change selection method for specific problem
     :param body: selection configuration
@@ -225,7 +205,9 @@ def get_ea_progress(problem_id):
 
     :rtype: object
     """
-    return 'do some magic!'
+
+    app_manager = AppManager()
+    return app_manager.get_progress(problem_id)
 
 
 def get_problem_by_id(problem_id):
