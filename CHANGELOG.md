@@ -1,4 +1,9 @@
+## [ 21.05.2022, 17:46 ]
 
+### Fixed
+- fix thread pausing mechanism
+- api now receives string ids for stopping conditions instead of numbers
+- time bound conversion from minutes to seconds
 
 ## [ 06.05.2022, 15:28 ]
 
