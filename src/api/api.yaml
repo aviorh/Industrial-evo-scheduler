@@ -346,38 +346,6 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-  /problem/{problem_id}/stopping-condition:
-    post:
-      summary: add new stopping condition
-      operationId: src.api.api.add_stopping_condition
-      parameters:
-        - in: path
-          name: problem_id
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID to get problem
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                cond_id:
-                  type: integer
-                  format: int32
-                bound:
-                  oneOf:
-                    - type: integer
-                    - type: string
-      responses:
-        '200':
-          description: stopping-condition added
-          content:
-            application/json:
-              schema:
-                type: object
-      x-codegen-request-body-name: body
   /problem/{problem_id}/stopping-condition/{cond_id}:
     put:
       summary: set stopping-condition size for EA to run
@@ -396,16 +364,15 @@ paths:
           required: true
           description: Numeric ID to get stopping-condition
       requestBody:
-        description: stopping-condition configuration
         content:
           application/json:
             schema:
               type: object
               properties:
-                site_data_id:
-                  type: integer
-                  format: int32
-        required: true
+                bound:
+                  oneOf:
+                    - type: integer
+                    - type: string
       responses:
         '200':
           description: population size modified successfully

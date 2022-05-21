@@ -116,6 +116,7 @@ class AppManager(metaclass=SingletonMeta):
         problem = self.get_problem_by_id(problem_id)
         cond_str_id = STOPPING_CONDITIONS.get(cond_id)
         problem.engine.set_stopping_condition(cond_str_id, bound)
+        return cond_str_id
 
     def delete_stopping_condition(self, problem_id, cond_id):
         problem = self.get_problem_by_id(problem_id)

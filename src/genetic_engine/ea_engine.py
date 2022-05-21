@@ -330,10 +330,12 @@ class EAEngine(threading.Thread):
         self.pause_cond.release()
 
     def set_stopping_condition(self, cond_id: str, bound):
-        self.stopping_conditions_configuration[cond_id] = StoppingCondition(True, bound)
+        logger.info(f"Set stopping condition to {cond_id}, bound {bound}")
+        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=True, bound=bound)
 
     def delete_stopping_condition(self, cond_id: str):
-        self.stopping_conditions_configuration[cond_id] = StoppingCondition(False, 0)
+        logger.info(f"delete stopping condition {cond_id}")
+        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=False, bound=0)
 
     def calculate_stopping_conditions(self, generation, fitness, time):
         should_stop = False
