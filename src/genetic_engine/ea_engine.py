@@ -261,7 +261,7 @@ class EAEngine(threading.Thread):
 
         # Append the current generation statistics to the logbook
         record = self.stats.compile(population) if self.stats else {}
-        self.logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+        self.logbook.record(generation=gen, nevals=len(invalid_ind), **record)
         if verbose:
             logger.info(self.logbook.stream)
 
@@ -272,6 +272,7 @@ class EAEngine(threading.Thread):
         genetic operators of selection, crossover and mutation.
         """
         verbose = __debug__
+        logger.info("=== RUN STARTED ===")
         logger.info(f"thread {self.ident} started")
         population = self.toolbox.population_creator(n=self.population_size)
 
@@ -310,6 +311,7 @@ class EAEngine(threading.Thread):
             self._perform_single_generation(population, generation, hof_size, verbose)
             generation += 1
 
+        logger.info("=== RUN FINISHED ===")
         return self.hall_of_fame.items
 
     def pause(self):
