@@ -1,9 +1,8 @@
 {
 	"info": {
-		"_postman_id": "a478b6b6-362e-4068-922d-c41fa53a17cf",
+		"_postman_id": "95ad45a4-3da5-4974-b03b-ce08f4e24d58",
 		"name": "final project collection",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8506654"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -58,6 +57,26 @@
 					"path": [
 						"api",
 						"problem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete problem",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/problems/0",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"problems",
+						"0"
 					]
 				}
 			},
@@ -216,6 +235,27 @@
 			"response": []
 		},
 		{
+			"name": "stop problem (cleanup)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/problem/0/stop",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"problem",
+						"0",
+						"stop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "resume problem",
 			"request": {
 				"method": "POST",
@@ -243,7 +283,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"bound\": 10\n}",
+					"raw": "{\n  \"bound\": 5\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -251,7 +291,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:9997/api/problem/0/stopping-condition/2",
+					"raw": "localhost:9997/api/problem/0/stopping-condition/time",
 					"host": [
 						"localhost"
 					],
@@ -261,7 +301,7 @@
 						"problem",
 						"0",
 						"stopping-condition",
-						"2"
+						"time"
 					]
 				}
 			},
@@ -325,6 +365,27 @@
 						"problem",
 						"0",
 						"fitness-graph"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get progress",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/problem/0/progress",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"problem",
+						"0",
+						"progress"
 					]
 				}
 			},
