@@ -1,0 +1,3 @@
+
+class EngineCleanupFailed(Exception):
+    pass

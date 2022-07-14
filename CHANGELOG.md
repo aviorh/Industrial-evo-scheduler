@@ -1,3 +1,9 @@
+## [ 14.07.2022, 17:00]
+
+### Added
+- stop engine and cleanup endpoint
+
+
 ## [ 21.05.2022, 21:54]
 
 ### Added

@@ -8,6 +8,7 @@ import numpy as np
 from deap import tools, algorithms, creator, base
 
 from src.app_manager.engine_facade import EAEngineFacade
+from src.exceptions.engine_exceptions import EngineCleanupFailed
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, DEFAULT_GENERATIONS, P_CROSSOVER, P_MUTATION
@@ -38,6 +39,7 @@ class EAEngine(threading.Thread):
     def __init__(self, site_data: SiteData):
         threading.Thread.__init__(self)
         # ~~~~~~ threading related members
+        self.terminate_run = False
         self.paused = False
         self.pause_cond = threading.Condition(threading.Lock())
 
@@ -305,6 +307,9 @@ class EAEngine(threading.Thread):
                 paused_time = time.time()
                 self.pause_cond.wait()
                 self.pause_cond.release()
+                if self.terminate_run:
+                    logger.info(f"running thread {self.ident} terminated by USER.")
+                    exit(0)
                 paused_total_time += (time.time() - paused_time)
                 logger.info(f'paused total time: {paused_total_time}')
 
@@ -365,5 +370,21 @@ class EAEngine(threading.Thread):
         fitness_cond.progress = fitness_cond.bound if fitness_cond.bound == 0 else \
             round((1 - (float(fitness) - fitness_cond.bound) / float(fitness)) * 100, 0)
 
+    def notify_run_termination(self):
+        self.terminate_run = True
+        self.resume()
 
+    def new_engine_from_existing(self):
+        new_engine = EAEngine(self.site_data)
 
+        new_engine.set_population_size(self.population_size)
+        new_engine.stopping_conditions_configuration = self.stopping_conditions_configuration
+        self._reset_run_progression(new_engine.stopping_conditions_configuration)
+
+        new_engine.toolbox = self.toolbox  # all EA parameters are maintained
+
+        return new_engine
+
+    def _reset_run_progression(self, stopping_conditions_configuration):
+        for stopping_cond in stopping_conditions_configuration.values():
+            stopping_cond.progress = 0

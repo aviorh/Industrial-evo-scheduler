@@ -107,6 +107,10 @@ class AppManager(metaclass=SingletonMeta):
         problem = self.get_problem_by_id(problem_id)
         problem.engine.resume()
 
+    def cleanup_problem(self, problem_id):
+        problem = self.get_problem_by_id(problem_id)
+        problem.perform_engine_cleanup()
+
     def set_stopping_condition(self, problem_id, cond_id, bound):
         problem = self.get_problem_by_id(problem_id)
         cond_str_id = STOPPING_CONDITIONS.get(cond_id)

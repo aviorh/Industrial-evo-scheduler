@@ -1,3 +1,7 @@
+import matplotlib
+matplotlib.use("Agg")
+
+import os.path
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -57,14 +61,28 @@ class Problem:
 
         # plot statistics:
         sns.set_style("whitegrid")
-        plt.plot(min_fitness_values, color='red')
-        plt.plot(mean_fitness_values, color='green')
-        plt.xlabel('Generation')
-        plt.ylabel('Min / Average Fitness')
-        plt.title('Min and Average fitness over Generations')
+        figure = plt.figure()
+        figure.clear()
+        ax = figure.add_subplot(1, 1, 1, title='Min and Average fitness over Generations',
+                                xlabel='Generation', ylabel='Min / Average Fitness')
+        ax.plot(min_fitness_values, color='red')
+        ax.plot(mean_fitness_values, color='green')
 
         # save graph to file in backend local_database
-        graph_filepath = f"{ROOT}/graph{self.id}.png"
-        plt.savefig(graph_filepath)
+        graph_filepath = os.path.join(ROOT, f"graph{self.id}.png")
+        if os.path.isfile(graph_filepath):
+            os.remove(graph_filepath)
 
+        figure.savefig(graph_filepath)
         return send_file(graph_filepath)
+
+    def perform_engine_cleanup(self):
+        old_engine = self.engine
+        old_engine.notify_run_termination()
+        old_engine.join()
+
+        new_engine = self.engine.new_engine_from_existing()
+        self.engine = new_engine
+
+        del old_engine
+

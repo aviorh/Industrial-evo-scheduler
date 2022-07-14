@@ -284,16 +284,15 @@ def start_ea(problem_id):
 
 
 def stop_ea(problem_id):
-    """stop ea for this problem
-
-   
-
+    """stop ea for this problem, and clean all results accumulated so far.
     :param problem_id: Numeric ID to get problem
     :type problem_id: int
 
     :rtype: object
     """
-    return 'do some magic!'
+    am = AppManager()
+    am.cleanup_problem(problem_id)
+    return "Calculation Stopped, data cleansed"
 
 
 def pause_ea(problem_id):
