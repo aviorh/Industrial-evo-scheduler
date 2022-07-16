@@ -13,7 +13,7 @@ class SiteDataParser:
         data_dict = json.loads(content)
         data_dict['id'] = id
         site_data = SiteData.from_dict(data_dict)
-        return site_data
+        return site_data, data_dict
 
 
 if __name__ == '__main__':

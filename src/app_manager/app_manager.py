@@ -1,13 +1,16 @@
 from typing import Dict
+
 from werkzeug.datastructures import FileStorage
 
+import src.utils.file_utils as file_utils
+from src.app_manager.consts import STOPPING_CONDITIONS
 from src.app_manager.problem import Problem
 from src.genetic_engine.ea_engine import EAEngine
 from src.site_data_parser.data_classes import SiteData
 from src.site_data_parser.site_data_parser import SiteDataParser
 from src.utils.singleton import SingletonMeta
-import src.utils.file_utils as file_utils
-from src.app_manager.consts import STOPPING_CONDITIONS
+from src.database.database import db
+from src.database.models import SiteData as DBSiteData
 
 
 class AppManager(metaclass=SingletonMeta):
@@ -50,9 +53,17 @@ class AppManager(metaclass=SingletonMeta):
 
     def create_site_data(self, file: FileStorage):
         self.save_site_data_file(file)
-        site_data = self.parser.parse_file(file, self.site_data_counter)
+        site_data, site_data_dict = self.parser.parse_file(file, self.site_data_counter)
+
+        # fixme: to be removed when site-data in db is fully integrated
         self.site_data_collection[self.site_data_counter] = site_data
         self.site_data_counter += 1
+
+        # update db
+        with db.auto_commit():
+            db_site_data = DBSiteData(data=site_data_dict)
+            db.session.add(db_site_data)
+
         return site_data
 
     def save_site_data_file(self, file: FileStorage):
