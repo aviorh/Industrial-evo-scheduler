@@ -89,19 +89,6 @@ class SiteData:
     def from_dict(cls, data):
         return from_dict(data_class=cls, data=data)
 
-    def get_individual_dimensions(self):
-        """
-        this is a 3D array, where
-        x - production_lines
-        y - products
-        z - total hours (for example hour number 30 is Monday, 6:00 AM
-        """
-        return len(self.production_lines), len(self.products), self.total_working_hours
-
-    def get_individual_length(self):
-        a, b, c = self.get_individual_dimensions()
-        return a * b * c
-
     def print_schedule(self, schedule: np.ndarray):
         schedule = schedule.view(dtype=np.ndarray)
         for prod_line in range(schedule.shape[0]):

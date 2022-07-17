@@ -13,7 +13,7 @@ from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, DEFAULT_GENERATIONS, P_CROSSOVER, P_MUTATION
 from src.genetic_engine.stopping_condition import StoppingCondition
-from src.site_data_parser.data_classes import SiteData
+from src.database.models import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
 from src.genetic_engine.tools.mutation import mutFlipBit
 
@@ -69,7 +69,7 @@ class EAEngine(threading.Thread):
 
         self._prepare_genetic_operators()
 
-        self.constraints_manager = ConstraintsManager(site_manager=self.site_data,
+        self.constraints_manager = ConstraintsManager(site_data=site_data,
                                                       invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,
                                                       # INVALID_SCHEDULING_PENALTY,
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
@@ -110,7 +110,7 @@ class EAEngine(threading.Thread):
     def _prepare_genetic_operators(self):
         self.set_selection_method(self.DEFAULT_SELECTION_METHOD_INDEX, params={'tournsize': 2})
         self.set_crossover_method(self.DEFAULT_CROSSOVER_METHOD_INDEX, params={})
-        self.add_mutation(self.DEFAULT_MUTATION_INDEX, params={'indpb': 1.0 / self.site_data.get_individual_length()})
+        self.add_mutation(self.DEFAULT_MUTATION_INDEX, params={'indpb': 1.0 / self.site_data.individual_length})
 
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
         production_line_halb_compliance = self.constraints_manager.production_line_halb_compliance(schedule=individual)
@@ -147,8 +147,7 @@ class EAEngine(threading.Thread):
         """
 
         # return creator.Individual(np.random.randint(2, size=self.site_data_list.get_individual_dimensions()))
-        num_product_lines, num_products, num_hours = self.site_data.get_individual_dimensions()
-        production_line_sched_dims = (num_product_lines, num_hours)
+        production_line_sched_dims = (self.site_data.num_production_lines, self.site_data.total_working_hours)
 
         # create 2D manufacturing schedule
         product_line_schedule = np.random.randint(2, size=production_line_sched_dims)
@@ -157,7 +156,7 @@ class EAEngine(threading.Thread):
             total_production_schedule = total_production_schedule | line
 
         # create random sequence of product ids to fill the schedule and shuffle their order
-        prod_ids = [prod.id for prod in self.site_data.products]
+        prod_ids = [prod["id"] for prod in self.site_data["products"]]
         random.shuffle(prod_ids)
 
         # create the 3rd dimension of schedule
@@ -165,7 +164,7 @@ class EAEngine(threading.Thread):
         prods_schedule = []
 
         for prod_id in prod_ids:
-            prod_sched = np.zeros(shape=(num_hours,), dtype=int)
+            prod_sched = np.zeros(shape=(self.site_data.total_working_hours,), dtype=int)
 
             if total_ones > 0:  # there are available slots in total schedule
                 # randomly choose how many slots this product will take in production

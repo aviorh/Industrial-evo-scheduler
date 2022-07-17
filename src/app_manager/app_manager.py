@@ -5,6 +5,7 @@ from werkzeug.datastructures import FileStorage
 import src.utils.file_utils as file_utils
 from src.app_manager.consts import STOPPING_CONDITIONS
 from src.app_manager.problem import Problem
+from src.database.exceptions import ItemNotFoundInDB
 from src.genetic_engine.ea_engine import EAEngine
 from src.site_data_parser.data_classes import SiteData
 from src.site_data_parser.site_data_parser import SiteDataParser
@@ -38,14 +39,18 @@ class AppManager(metaclass=SingletonMeta):
         return problem
 
     def create_problem(self, site_data_id):
-
         ea_engine = EAEngine(site_data=self.get_site_data_by_id(site_data_id))
         problem = Problem(id=self.problem_counter, site_data_id=site_data_id, engine=ea_engine)
         return self.add_problem(problem)
 
     # fixme: return 404 not found when there is keyError
-    def get_site_data_by_id(self, site_data_id: int):
-        return self.site_data_collection.get(site_data_id)
+    def get_site_data_by_id(self, site_data_id: int) -> DBSiteData:
+        # fixme: to be removed when site-data in db is fully integrated
+        # return self.site_data_collection.get(site_data_id)
+        site_data: DBSiteData = DBSiteData.query.filter_by(id=site_data_id).first()
+        if site_data is None:
+            raise ItemNotFoundInDB(f"item site_data with id {site_data_id} was not found in DB")
+        return site_data
 
     # fixme: return 404 not found when there is keyError
     def get_problem_by_id(self, problem_id: int):
@@ -61,7 +66,13 @@ class AppManager(metaclass=SingletonMeta):
 
         # update db
         with db.auto_commit():
-            db_site_data = DBSiteData(data=site_data_dict)
+            num_production_lines = len(site_data_dict["production_lines"])
+            num_products = len(site_data_dict["products"])
+            total_working_hours = len(site_data_dict["total_working_hours"])
+            individual_length = total_working_hours * num_products * num_production_lines
+            db_site_data = DBSiteData(data=site_data_dict, num_products=num_products,
+                                      num_production_lines=num_production_lines,
+                                      total_working_hours=total_working_hours, individual_length=individual_length)
             db.session.add(db_site_data)
 
         return site_data
@@ -83,7 +94,16 @@ class AppManager(metaclass=SingletonMeta):
         if len(relevant_problems) > 0:
             return "status code 409 - conflict. could not delete the data"
         else:
+            # fixme: to be removed when site-data in db is fully integrated
             del self.site_data_collection[site_data_id]
+
+            # update db
+            with db.auto_commit():
+                site_data = DBSiteData.query.filter_by(id=site_data_id).first()
+                if site_data is None:
+                    raise ItemNotFoundInDB(f"item site_data with id {site_data_id} was not found in DB")
+                db.session.delete(site_data)
+
         return self.site_data_collection
 
     def add_mutation(self, problem_id, mutation_id, mutation_params):

@@ -6,6 +6,10 @@ app = create_app()
 app.app.app_context().push()
 
 
+def update_schema():
+    db.create_all()
+
+
 def delete_all_site_data():
     db.session.query(SiteData).delete()
     db.session.commit()
