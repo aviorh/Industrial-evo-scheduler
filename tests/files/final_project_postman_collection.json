@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "95ad45a4-3da5-4974-b03b-ce08f4e24d58",
+		"_postman_id": "9f219e93-ee2e-43c0-9236-d53899987267",
 		"name": "final project collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -29,6 +29,40 @@
 					"path": [
 						"api",
 						"site-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all site data",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/shira/PycharmProjects/Industrial-evo-scheduler/tests/files/site_data.json"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:9997/api/problem/0/progress",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"problem",
+						"0",
+						"progress"
 					]
 				}
 			},
@@ -375,6 +409,40 @@
 			"request": {
 				"method": "GET",
 				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/problem/0/progress",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"problem",
+						"0",
+						"progress"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all site data",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/shira/PycharmProjects/Industrial-evo-scheduler/tests/files/site_data.json"
+						}
+					]
+				},
 				"url": {
 					"raw": "localhost:9997/api/problem/0/progress",
 					"host": [
