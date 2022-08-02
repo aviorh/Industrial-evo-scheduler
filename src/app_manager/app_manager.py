@@ -40,6 +40,9 @@ class AppManager(metaclass=SingletonMeta):
         problem = Problem(id=self.problem_counter, site_data_id=site_data_id, engine=ea_engine)
         return self.add_problem(problem)
 
+    def get_site_data(self):
+        return [d.get('id') for d in self.site_data_collection]
+
     # fixme: return 404 not found when there is keyError
     def get_site_data_by_id(self, site_data_id: int):
         return self.site_data_collection.get(site_data_id)
