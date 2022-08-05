@@ -41,7 +41,7 @@ class AppManager(metaclass=SingletonMeta):
         return self.add_problem(problem)
 
     def get_site_data(self):
-        return [d.get('id') for d in self.site_data_collection]
+        return list(self.site_data_collection.keys())
 
     # fixme: return 404 not found when there is keyError
     def get_site_data_by_id(self, site_data_id: int):
