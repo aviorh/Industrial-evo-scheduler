@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 
 from werkzeug.datastructures import FileStorage
@@ -12,6 +13,7 @@ from src.site_data_parser.site_data_parser import SiteDataParser
 from src.utils.singleton import SingletonMeta
 from src.database.database import db
 from src.database.models import SiteData as DBSiteData
+from src.database.models import Problem as DBProblem
 
 
 class AppManager(metaclass=SingletonMeta):
@@ -38,10 +40,17 @@ class AppManager(metaclass=SingletonMeta):
         self.problem_counter += 1
         return problem
 
-    def create_problem(self, site_data_id):
+    def create_problem(self, site_data_id, title):
+        # fixme: to be removed when problem in db is fully integrated
         ea_engine = EAEngine(site_data=self.get_site_data_by_id(site_data_id))
         problem = Problem(id=self.problem_counter, site_data_id=site_data_id, engine=ea_engine)
-        return self.add_problem(problem)
+        self.add_problem(problem)
+
+        # update db
+        with db.auto_commit():
+            full_title = self._build_full_title(title)
+            db_problem = DBProblem(title=full_title, site_data_id=site_data_id)
+
 
     # fixme: return 404 not found when there is keyError
     def get_site_data_by_id(self, site_data_id: int) -> DBSiteData:
@@ -53,8 +62,15 @@ class AppManager(metaclass=SingletonMeta):
         return site_data
 
     # fixme: return 404 not found when there is keyError
-    def get_problem_by_id(self, problem_id: int):
-        return self.problems.get(problem_id)
+    def get_problem_by_id(self, problem_id: int) -> DBProblem:
+        # fixme: to be removed when problem in db is fully integrated
+        self.problems.get(problem_id)
+
+        # get problem from db
+        problem: DBProblem = DBProblem.query.filter_by(id=problem_id).first()
+        if problem is None:
+            raise ItemNotFoundInDB(f"item problem with id {problem_id} was not found in DB")
+        return problem
 
     def create_site_data(self, file: FileStorage):
         self.save_site_data_file(file)
@@ -66,16 +82,23 @@ class AppManager(metaclass=SingletonMeta):
 
         # update db
         with db.auto_commit():
+            title = site_data_dict["title"]
+            full_title = self._build_full_title(title)
             num_production_lines = len(site_data_dict["production_lines"])
             num_products = len(site_data_dict["products"])
-            total_working_hours = len(site_data_dict["total_working_hours"])
+            total_working_hours = site_data_dict["total_working_hours"]
             individual_length = total_working_hours * num_products * num_production_lines
-            db_site_data = DBSiteData(data=site_data_dict, num_products=num_products,
+            db_site_data = DBSiteData(title=full_title, json_data=site_data_dict, num_products=num_products,
                                       num_production_lines=num_production_lines,
                                       total_working_hours=total_working_hours, individual_length=individual_length)
             db.session.add(db_site_data)
 
         return site_data
+
+    def _build_full_title(self, title):
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M")
+        return f"{title} - {dt_string}"
 
     def save_site_data_file(self, file: FileStorage):
         file_utils.save_file(
@@ -117,8 +140,9 @@ class AppManager(metaclass=SingletonMeta):
         return problem
 
     def set_population_size(self, problem_id, population_size):
-        problem = self.get_problem_by_id(problem_id)
-        problem.engine.set_population_size(population_size)
+        problem: DBProblem = self.get_problem_by_id(problem_id)
+        problem.engine_data["population_size"] = population_size
+        # fixme: need to update the engine instance as well. we need to hold a list of all our running engines
         return problem
 
     def set_selection_method(self, problem_id, selection_id, selection_params):

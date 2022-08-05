@@ -8,6 +8,7 @@ import numpy as np
 from deap import tools, algorithms, creator, base
 
 from src.app_manager.engine_facade import EAEngineFacade
+from src.database.exceptions import ItemNotFoundInDB
 from src.exceptions.engine_exceptions import EngineCleanupFailed
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
@@ -93,6 +94,34 @@ class EAEngine(threading.Thread):
             crossover_method=self.toolbox.mate.func.__name__,
             mutations=self.toolbox.mutate.func.__name__
         )
+
+    def to_json(self):
+        return {
+            "stopping_conditions": self.stopping_conditions_configuration,
+            "population_size": self.population_size,
+            "selection_method": self.toolbox.select.func.__name__,
+            "crossover_method": self.toolbox.mate.func.__name__,
+            "mutations": self.toolbox.mutate.func.__name__
+        }
+
+    @staticmethod
+    def from_json(json_data):
+        site_data_id = json_data['site_data_id']
+        site_data: SiteData = SiteData.query.filter_by(id=site_data_id).first()
+        if site_data is None:
+            raise ItemNotFoundInDB(f"item site_data with id {site_data_id} was not found in DB")
+
+        engine = EAEngine(site_data=site_data)
+        engine.set_population_size(json_data['population_size'])
+        engine.stopping_conditions_configuration = json_data['stopping_conditions_configuration']
+
+        engine.set_selection_method(method_id=json_data['selection_method']['method_id'],
+                                    params=json_data['selection_method']['params'])
+        engine.set_crossover_method(method_id=json_data['crossover_method']['method_id'],
+                                    params=json_data['crossover_method']['params'])
+        for mutation in json_data['mutations']:
+            engine.add_mutation(mutation_id=mutation['mutation_id'],
+                                params=mutation['params'])
 
     def set_population_size(self, size):
         self.population_size = size

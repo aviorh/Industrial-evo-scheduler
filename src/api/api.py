@@ -35,8 +35,9 @@ def add_problem(body):
     
     app_manager = AppManager()
     site_data_id = body['site_data_id']
+    title = body['title']
 
-    new_problem = app_manager.create_problem(site_data_id=site_data_id)
+    new_problem = app_manager.create_problem(site_data_id=site_data_id, title=title)
     return new_problem.to_dict_format()
 
 

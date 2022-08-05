@@ -94,6 +94,8 @@ paths:
                 site_data_id:
                   type: integer
                   format: int32
+                title:
+                  type: string
         required: true
       responses:
         '200':

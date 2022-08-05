@@ -52,7 +52,7 @@ class Product(Base):
 @dataclass
 class SiteData:
     # def __init__(self, production_lines: List[ProductionLine], products: List[Product], bulk_products: List[BulkProduct],
-    #              usual_start_hour: int, usual_end_hour: int,
+    #              usual_start_hour: int, usual_end_hour: int, title: str,
     #              total_working_hours, num_shifts, shift_duration, manpower_per_production_line: Dict[int, int], recipes: Dict[int, Dict],
     #              product_packaging_unit: Dict[int, int], retailer_packaging_unit: Dict[int, Tuple[int, int]]):
     """
@@ -70,6 +70,7 @@ class SiteData:
     :param retailer_packaging_unit: packagge id -> existing stock quantity. ex: Cardboard-box Bissli Grill 100g 1 unit package
     """
     id: int
+    title: str
     production_lines: List[ProductionLine]
     products: List[Product]
     bulk_products: List[BulkProduct]
