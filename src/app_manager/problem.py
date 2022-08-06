@@ -32,7 +32,7 @@ class Problem:
     id: int
     site_data_id: int
     engine: EAEngine
-    description: str = ''
+    title: str
     creation_time: str = field(default_factory=_get_datetime_str)
     schedule: str = None  # json? dict?
 
@@ -41,7 +41,7 @@ class Problem:
             "id": self.id,
             "site_data_id": self.site_data_id,
             "engine": self.engine.to_dict(),
-            "description": self.description,
+            "title": self.title,
             "creation_time": self.creation_time,
             "schedule": None
         }

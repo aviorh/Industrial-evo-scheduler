@@ -11,15 +11,15 @@ logger = logging.getLogger()
 
 
 class ConstraintsManager:
-    def __init__(self, site_data: SiteDataDB, invalid_scheduling_penalty, hard_constraints_penalty, soft_constraints_penalty):
+    def __init__(self, db_site_data: SiteDataDB, invalid_scheduling_penalty, hard_constraints_penalty, soft_constraints_penalty):
         self.soft_constraints_penalty = soft_constraints_penalty
-        self.site_data = SiteData.from_dict(site_data.json_data)
+        self.site_data = SiteData.from_dict(db_site_data.json_data)
         self.invalid_scheduling_penalty = invalid_scheduling_penalty
         self.hard_constraints_penalty = hard_constraints_penalty
 
-        self.num_production_lines = self.site_data.num_production_lines
-        self.num_working_hours = self.site_data.total_working_hours
-        self.num_products = self.site_data.products
+        self.num_production_lines = db_site_data.num_production_lines
+        self.num_working_hours = db_site_data.total_working_hours
+        self.num_products = db_site_data.num_products
 
     def count_regular_hours_exceeded_violations(self, schedule) -> int:
         # fixme: finish

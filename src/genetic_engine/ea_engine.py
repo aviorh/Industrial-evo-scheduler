@@ -2,6 +2,7 @@ import logging
 import random
 import threading
 import time
+from dataclasses import asdict
 from typing import Tuple, Union, Any, Dict
 
 import numpy as np
@@ -24,14 +25,17 @@ logger = logging.getLogger()
 
 class EAEngine(threading.Thread):
     SELECTION_METHODS = {
-        0: tools.selTournament
+        0: tools.selTournament,
+        tools.selTournament.__name__: 0
     }
     CROSSOVER_METHODS = {
-        0: cxTwoPoint
+        0: cxTwoPoint,
+        cxTwoPoint.__name__: 0
     }
 
     MUTATIONS = {
-        0: mutFlipBit
+        0: mutFlipBit,
+        mutFlipBit.__name__: 0
     }
     DEFAULT_SELECTION_METHOD_INDEX = 0
     DEFAULT_CROSSOVER_METHOD_INDEX = 0
@@ -70,7 +74,7 @@ class EAEngine(threading.Thread):
 
         self._prepare_genetic_operators()
 
-        self.constraints_manager = ConstraintsManager(site_data=site_data,
+        self.constraints_manager = ConstraintsManager(db_site_data=site_data,
                                                       invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,
                                                       # INVALID_SCHEDULING_PENALTY,
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
@@ -88,21 +92,16 @@ class EAEngine(threading.Thread):
 
     def to_dict(self):
         return EAEngineFacade(
-            stopping_conditions=self.stopping_conditions_configuration,
+            site_data_id=self.site_data.id,
             population_size=self.population_size,
-            selection_method=self.toolbox.select.func.__name__,
-            crossover_method=self.toolbox.mate.func.__name__,
-            mutations=self.toolbox.mutate.func.__name__
-        )
-
-    def to_json(self):
-        return {
-            "stopping_conditions": self.stopping_conditions_configuration,
-            "population_size": self.population_size,
-            "selection_method": self.toolbox.select.func.__name__,
-            "crossover_method": self.toolbox.mate.func.__name__,
-            "mutations": self.toolbox.mutate.func.__name__
-        }
+            stopping_conditions_configuration={k: asdict(v) for k, v in self.stopping_conditions_configuration.items()},
+            selection_method={"method_id": self.SELECTION_METHODS[self.toolbox.select.func.__name__],
+                              "params": self.toolbox.select.keywords},
+            crossover_method={"method_id": self.CROSSOVER_METHODS[self.toolbox.mate.func.__name__],
+                              "params": self.toolbox.mate.keywords},
+            mutations=[{"mutation_id": self.MUTATIONS[self.toolbox.mutate.func.__name__],
+                        "params": self.toolbox.mutate.keywords}]
+        ).to_dict()
 
     @staticmethod
     def from_json(json_data):
@@ -113,7 +112,8 @@ class EAEngine(threading.Thread):
 
         engine = EAEngine(site_data=site_data)
         engine.set_population_size(json_data['population_size'])
-        engine.stopping_conditions_configuration = json_data['stopping_conditions_configuration']
+        for cond_id, params in json_data['stopping_conditions_configuration'].items():
+            engine.set_stopping_condition(cond_id, bound=params["bound"], force_apply_state=params["applied"])
 
         engine.set_selection_method(method_id=json_data['selection_method']['method_id'],
                                     params=json_data['selection_method']['params'])
@@ -122,6 +122,8 @@ class EAEngine(threading.Thread):
         for mutation in json_data['mutations']:
             engine.add_mutation(mutation_id=mutation['mutation_id'],
                                 params=mutation['params'])
+
+        return engine
 
     def set_population_size(self, size):
         self.population_size = size
@@ -185,7 +187,7 @@ class EAEngine(threading.Thread):
             total_production_schedule = total_production_schedule | line
 
         # create random sequence of product ids to fill the schedule and shuffle their order
-        prod_ids = [prod["id"] for prod in self.site_data["products"]]
+        prod_ids = [prod["id"] for prod in self.site_data.json_data["products"]]
         random.shuffle(prod_ids)
 
         # create the 3rd dimension of schedule
@@ -254,7 +256,7 @@ class EAEngine(threading.Thread):
 
     def set_crossover_method(self, method_id, params: Dict):
         # probability is required for the algorithm and not for a specific method
-        probability = params.pop("probability", None)
+        probability = params.get("probability", None)
         self.crossover_probability = P_CROSSOVER if probability is None else probability
         self.toolbox.register("mate", self.CROSSOVER_METHODS[method_id], **params)
         logger.info(f"Crossover method changed to {self.CROSSOVER_METHODS[method_id].__name__}")
@@ -364,9 +366,10 @@ class EAEngine(threading.Thread):
         # Now release the lock
         self.pause_cond.release()
 
-    def set_stopping_condition(self, cond_id: str, bound):
+    def set_stopping_condition(self, cond_id: str, bound, force_apply_state=None):
+        applied = True if force_apply_state is None else force_apply_state
         logger.info(f"Set stopping condition to {cond_id}, bound {bound}")
-        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=True, bound=bound)
+        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=applied, bound=bound)
 
     def delete_stopping_condition(self, cond_id: str):
         logger.info(f"delete stopping condition {cond_id}")

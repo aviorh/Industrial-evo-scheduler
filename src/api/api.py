@@ -1,4 +1,5 @@
 import connexion
+from dataclasses import asdict
 
 from src.app_manager.app_manager import AppManager
 
@@ -192,7 +193,7 @@ def get_ea_best_solution(problem_id):
     :rtype: object
     """
     app_manager = AppManager()
-    problem = app_manager.get_problem_by_id(problem_id)
+    _, problem = app_manager.get_problem_by_id(problem_id)
     return problem.get_current_best_solution()
 
 
@@ -219,7 +220,7 @@ def get_problem_by_id(problem_id):
     :rtype: object
     """
     app_manager = AppManager()
-    problem = app_manager.get_problem_by_id(problem_id)
+    _, problem = app_manager.get_problem_by_id(problem_id)
 
     return problem.to_dict_format()
 
@@ -336,7 +337,7 @@ def get_fitness_logbook(problem_id):
     """
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
+    _, problem = am.get_problem_by_id(problem_id)
 
     return problem.get_fitness_logbook()
 
@@ -349,5 +350,5 @@ def get_fitness_graph(problem_id):
     """
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
+    _, problem = am.get_problem_by_id(problem_id)
     return problem.get_fitness_graph_as_img()
