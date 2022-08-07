@@ -35,7 +35,6 @@ class AppManager(metaclass=SingletonMeta):
         return problem
 
     def create_problem(self, site_data_id):
-
         ea_engine = EAEngine(site_data=self.get_site_data_by_id(site_data_id))
         problem = Problem(id=self.problem_counter, site_data_id=site_data_id, engine=ea_engine)
         return self.add_problem(problem)
@@ -51,7 +50,7 @@ class AppManager(metaclass=SingletonMeta):
     def get_problem_by_id(self, problem_id: int):
         return self.problems.get(problem_id)
 
-    def create_site_data(self, file: FileStorage):
+    def create_site_data(self, file: FileStorage, title: str):
         self.save_site_data_file(file)
         site_data = self.parser.parse_file(file, self.site_data_counter)
         self.site_data_collection[self.site_data_counter] = site_data
