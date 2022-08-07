@@ -39,6 +39,8 @@ class AppManager(metaclass=SingletonMeta):
         if db is not None:
             db_problems = DBProblem.query.all()
             for db_problem in db_problems:
+                with db.auto_commit():
+                    db_problem.status = 'idle'
                 self._create_problem_from_db(db_problem)
 
     def _create_problem_from_db(self, db_problem: DBProblem):
@@ -137,7 +139,6 @@ class AppManager(metaclass=SingletonMeta):
         problem.engine.add_mutation(mutation_id, mutation_params)
 
         with db.auto_commit():
-            # fixme: issue when writing json data to db
             tmp_data = deepcopy(db_problem.engine_data)
             tmp_data["mutations"][0] = {"mutation_id": mutation_id, "params": mutation_params}
 
@@ -152,7 +153,11 @@ class AppManager(metaclass=SingletonMeta):
         # update problem instance on db
         with db.auto_commit():
             db_problem, _ = self.get_problem_by_id(problem_id)
-            db_problem.engine_data["population_size"] = population_size
+
+            tmp_data = deepcopy(db_problem.engine_data)
+            tmp_data["population_size"] = population_size
+
+            db_problem.engine_data = tmp_data
 
         return db_problem
 
@@ -162,9 +167,12 @@ class AppManager(metaclass=SingletonMeta):
 
         with db.auto_commit():
             db_problem, _ = self.get_problem_by_id(problem_id)
-            db_problem.engine_data["crossover_method"]["method_id"] = crossover_id
-            db_problem.engine_data["crossover_method"]["params"] = crossover_params
 
+            tmp_data = deepcopy(db_problem.engine_data)
+            tmp_data["crossover_method"]["method_id"] = crossover_id
+            tmp_data["crossover_method"]["params"] = crossover_params
+
+            db_problem.engine_data = tmp_data
         return problem
 
     def set_selection_method(self, problem_id, selection_id, selection_params):
@@ -173,22 +181,35 @@ class AppManager(metaclass=SingletonMeta):
 
         with db.auto_commit():
             db_problem, _ = self.get_problem_by_id(problem_id)
-            db_problem.engine_data["selection_method"]["method_id"] = selection_id
-            db_problem.engine_data["selection_method"]["params"] = selection_params
+
+            tmp_data = deepcopy(db_problem.engine_data)
+            tmp_data["selection_method"]["method_id"] = selection_id
+            tmp_data["selection_method"]["params"] = selection_params
+
+            db_problem.engine_data = tmp_data
 
         return problem
 
     def start_running(self, problem_id):
-        problem = self.problems[problem_id]
+        db_problem, problem = self.get_problem_by_id(problem_id)
         problem.engine.start()
 
+        with db.auto_commit():
+            db_problem.status = "running"
+
     def pause_problem(self, problem_id):
-        problem = self.problems[problem_id]
+        db_problem, problem = self.get_problem_by_id(problem_id)
         problem.engine.pause()
 
+        with db.auto_commit():
+            db_problem.status = "paused"
+
     def resume_problem(self, problem_id):
-        problem = self.problems[problem_id]
+        db_problem, problem = self.get_problem_by_id(problem_id)
         problem.engine.resume()
+
+        with db.auto_commit():
+            db_problem.status = "running"
 
     def cleanup_problem(self, problem_id):
         db_problem, problem = self.get_problem_by_id(problem_id)
@@ -196,6 +217,7 @@ class AppManager(metaclass=SingletonMeta):
 
         with db.auto_commit():
             db_problem.engine_data = problem.engine.to_dict()
+            db_problem.status = "idle"
 
     def set_stopping_condition(self, problem_id, cond_id, bound):
         problem: Problem = self.problems[problem_id]
@@ -207,8 +229,12 @@ class AppManager(metaclass=SingletonMeta):
 
         with db.auto_commit():
             db_problem, _ = self.get_problem_by_id(problem_id)
-            db_problem.engine_data["stopping_conditions_configuration"][cond_str_id]["applied"] = True
-            db_problem.engine_data["stopping_conditions_configuration"][cond_str_id]["bound"] = bound
+
+            tmp_data = deepcopy(db_problem.engine_data)
+            tmp_data["stopping_conditions_configuration"][cond_str_id]["applied"] = True
+            tmp_data["stopping_conditions_configuration"][cond_str_id]["bound"] = bound
+
+            db_problem.engine_data = tmp_data
 
         return cond_str_id
 
@@ -218,9 +244,16 @@ class AppManager(metaclass=SingletonMeta):
         problem.engine.delete_stopping_condition(cond_str_id)
 
         with db.auto_commit():
-            db_problem.engine_data["stopping_conditions_configuration"][cond_str_id]["applied"] = False
-            db_problem.engine_data["stopping_conditions_configuration"][cond_str_id]["bound"] = 0
+            tmp_data = deepcopy(db_problem.engine_data)
+            tmp_data["stopping_conditions_configuration"][cond_str_id]["applied"] = False
+            tmp_data["stopping_conditions_configuration"][cond_str_id]["bound"] = 0
+
+            db_problem.engine_data = tmp_data
 
     def get_progress(self, problem_id):
         _, problem = self.get_problem_by_id(problem_id)
         return problem.engine.stopping_conditions_configuration
+
+    def get_sites_data(self):
+        return [site_data.as_dict() for site_data in DBSiteData.query.all()]
+

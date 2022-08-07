@@ -230,7 +230,7 @@ def get_problems():
     :rtype: object
     """
     app_manager = AppManager()
-    return app_manager.problems
+    return [problem.to_dict_format() for problem in app_manager.problems.values()]
 
 
 def get_site_data_by_id(site_data_id):
@@ -247,14 +247,8 @@ def get_site_data_by_id(site_data_id):
 
 
 def get_sites_data():
-    """get all site-datas
-
-   
-
-
-    :rtype: object
-    """
-    return 'do some magic!'
+    app_manager = AppManager()
+    return app_manager.get_sites_data()
 
 
 def remove_mutation(problem_id, mutation_id):

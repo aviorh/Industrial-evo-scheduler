@@ -14,6 +14,9 @@ class SiteData(db.Model):
     num_production_lines = db.Column(db.Integer)
     individual_length = db.Column(db.Integer)
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Problem(db.Model):
     __tablename__ = 'problems'
@@ -25,6 +28,7 @@ class Problem(db.Model):
     site_data = db.relationship('SiteData')
     engine_data = db.Column(MutableDict.as_mutable(db.JSON))
 
+    status = db.Column(db.Text, default='idle')
     """
     engine json:
     {

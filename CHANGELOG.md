@@ -1,3 +1,13 @@
+## [7.08.2022, 14:00]
+- integrated problems and sites-data to sqlite local db
+- automatically load data from db on application startup
+- db for solutions still not implemented (progress, raw solution).
+- added status for each problem in db: `running`/`paused`/`idle`. if application reset, 
+  all problems status is lazy updated to `idle`.
+- added `GET` endpoints for all sites-data and problems
+- updated postman collection
+
+
 ## [ 14.07.2022, 17:00]
 
 ### Added

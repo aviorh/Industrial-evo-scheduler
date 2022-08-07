@@ -1,5 +1,6 @@
 import connexion
 from src.database.database import db
+import os
 
 
 def create_app():
@@ -7,7 +8,9 @@ def create_app():
     connexion_app.add_api('api.yaml', arguments={'title': 'Evolutionary Manufacturing Scheduler API'}, pythonic_params=True)
 
     app = connexion_app.app
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/avior/Desktop/GIT/industrial-evo-scheduler/iplanner_new3.db'
+    current_dir_path = os.path.dirname(__file__)
+    current_db_path = f"{current_dir_path}/../../iplanner_new4.db".replace("C:", "")
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{current_db_path}'
     db.init_app(app)
 
     return connexion_app

@@ -35,7 +35,7 @@ class BulkProduct(Base):
 class Product(Base):
     """Bissli Grill 100g"""
     id: int
-    bulk_id: int  # fixme: might need to hold BulkProduct instance for mutation
+    bulk_id: int
     name: str
     priority: int  # 1 - 5 / low (1) - urgent (5)
     weight: int  # weight per unit, grams

@@ -62,7 +62,6 @@ class EAEngine(threading.Thread):
         self.stats = self._prepare_statistics_object()
 
         # define a single objective, maximizing fitness strategy:
-        # fixme: maybe need fitness max instead min.
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
         # prepare fitness evaluation function

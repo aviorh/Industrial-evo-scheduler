@@ -19,7 +19,7 @@ def individual_converter(func):
 
 
 def check_individual_validity(individual, x, z):
-    # fixme: for debugging
+    # for debugging
     for i, k in np.ndindex(x, z):
         if individual[i,:,k].sum() > 1:
             raise KeyError("shit!!!!")
