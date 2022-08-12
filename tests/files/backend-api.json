@@ -16,7 +16,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/Users/avior/Desktop/final-project/Industrial-evo-scheduler/tests/files/site_data.json"
+							"src": "/C:/Users/shira/PycharmProjects/Industrial-evo-scheduler/tests/files/site_data.json"
 						}
 					]
 				},
@@ -75,7 +75,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"site_data_id\": 0\n}",
+					"raw": "{\n    \"site_data_id\": 1,\n    \"title\": \"RUN #11\" \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -122,7 +122,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problems/0",
+					"raw": "localhost:9997/api/problems/1",
 					"host": [
 						"localhost"
 					],
@@ -130,7 +130,45 @@
 					"path": [
 						"api",
 						"problems",
-						"0"
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all problems",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/problem",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"problem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all sites data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/site-data",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"site-data"
 					]
 				}
 			},
@@ -143,7 +181,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"mutation_id\": 0,\n    \"mutation_parameters\": {}\n}",
+					"raw": "{\n    \"mutation_id\": 0,\n    \"mutation_parameters\": {\"indpb\": 0.22222222222}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -151,7 +189,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:9997/api/problem/0/mutation",
+					"raw": "localhost:9997/api/problem/1/mutation",
 					"host": [
 						"localhost"
 					],
@@ -159,7 +197,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"mutation"
 					]
 				}
@@ -173,7 +211,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"selection_id\": 0\n}",
+					"raw": "{\n    \"selection_id\": 0,\n    \"selection_parameters\": {\"tournsize\": 7}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -181,7 +219,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:9997/api/problem/0/selection",
+					"raw": "localhost:9997/api/problem/1/selection",
 					"host": [
 						"localhost"
 					],
@@ -189,7 +227,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"selection"
 					]
 				}
@@ -203,7 +241,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"crossover_id\": 0,\n    \"crossover_parameters\": {\n        \"probability\": 0.233333\n    }\n}",
+					"raw": "{\n    \"crossover_id\": 0,\n    \"crossover_parameters\": {}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -211,7 +249,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:9997/api/problem/0/crossover",
+					"raw": "localhost:9997/api/problem/1/crossover",
 					"host": [
 						"localhost"
 					],
@@ -219,7 +257,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"crossover"
 					]
 				}
@@ -232,7 +270,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/play",
+					"raw": "localhost:9997/api/problem/1/play",
 					"host": [
 						"localhost"
 					],
@@ -240,7 +278,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"play"
 					]
 				}
@@ -253,7 +291,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/pause",
+					"raw": "localhost:9997/api/problem/1/pause",
 					"host": [
 						"localhost"
 					],
@@ -261,7 +299,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"pause"
 					]
 				}
@@ -274,7 +312,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/stop",
+					"raw": "localhost:9997/api/problem/1/stop",
 					"host": [
 						"localhost"
 					],
@@ -282,7 +320,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"stop"
 					]
 				}
@@ -295,7 +333,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/resume",
+					"raw": "localhost:9997/api/problem/1/resume",
 					"host": [
 						"localhost"
 					],
@@ -303,7 +341,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"resume"
 					]
 				}
@@ -347,7 +385,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/solution",
+					"raw": "localhost:9997/api/problem/1/solution",
 					"host": [
 						"localhost"
 					],
@@ -355,7 +393,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"solution"
 					]
 				}
@@ -368,7 +406,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/fitness-logbook",
+					"raw": "localhost:9997/api/problem/1/fitness-logbook",
 					"host": [
 						"localhost"
 					],
@@ -376,7 +414,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"fitness-logbook"
 					]
 				}
@@ -389,7 +427,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/fitness-graph",
+					"raw": "localhost:9997/api/problem/1/fitness-graph",
 					"host": [
 						"localhost"
 					],
@@ -397,7 +435,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
+						"1",
 						"fitness-graph"
 					]
 				}
@@ -410,7 +448,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9997/api/problem/0/progress",
+					"raw": "localhost:9997/api/problem/1/progress",
 					"host": [
 						"localhost"
 					],
@@ -418,41 +456,7 @@
 					"path": [
 						"api",
 						"problem",
-						"0",
-						"progress"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "get all site data",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Users/shira/PycharmProjects/Industrial-evo-scheduler/tests/files/site_data.json"
-						}
-					]
-				},
-				"url": {
-					"raw": "localhost:9997/api/problem/0/progress",
-					"host": [
-						"localhost"
-					],
-					"port": "9997",
-					"path": [
-						"api",
-						"problem",
-						"0",
+						"1",
 						"progress"
 					]
 				}

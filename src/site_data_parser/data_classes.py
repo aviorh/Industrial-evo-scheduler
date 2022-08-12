@@ -35,7 +35,7 @@ class BulkProduct(Base):
 class Product(Base):
     """Bissli Grill 100g"""
     id: int
-    bulk_id: int  # fixme: might need to hold BulkProduct instance for mutation
+    bulk_id: int
     name: str
     priority: int  # 1 - 5 / low (1) - urgent (5)
     weight: int  # weight per unit, grams
@@ -52,7 +52,7 @@ class Product(Base):
 @dataclass
 class SiteData:
     # def __init__(self, production_lines: List[ProductionLine], products: List[Product], bulk_products: List[BulkProduct],
-    #              usual_start_hour: int, usual_end_hour: int,
+    #              usual_start_hour: int, usual_end_hour: int, title: str,
     #              total_working_hours, num_shifts, shift_duration, manpower_per_production_line: Dict[int, int], recipes: Dict[int, Dict],
     #              product_packaging_unit: Dict[int, int], retailer_packaging_unit: Dict[int, Tuple[int, int]]):
     """
@@ -70,6 +70,7 @@ class SiteData:
     :param retailer_packaging_unit: packagge id -> existing stock quantity. ex: Cardboard-box Bissli Grill 100g 1 unit package
     """
     id: int
+    title: str
     production_lines: List[ProductionLine]
     products: List[Product]
     bulk_products: List[BulkProduct]
@@ -88,19 +89,6 @@ class SiteData:
     @classmethod
     def from_dict(cls, data):
         return from_dict(data_class=cls, data=data)
-
-    def get_individual_dimensions(self):
-        """
-        this is a 3D array, where
-        x - production_lines
-        y - products
-        z - total hours (for example hour number 30 is Monday, 6:00 AM
-        """
-        return len(self.production_lines), len(self.products), self.total_working_hours
-
-    def get_individual_length(self):
-        a, b, c = self.get_individual_dimensions()
-        return a * b * c
 
     def print_schedule(self, schedule: np.ndarray):
         schedule = schedule.view(dtype=np.ndarray)

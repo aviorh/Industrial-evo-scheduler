@@ -2,18 +2,20 @@ import logging
 import random
 import threading
 import time
+from dataclasses import asdict
 from typing import Tuple, Union, Any, Dict
 
 import numpy as np
 from deap import tools, algorithms, creator, base
 
 from src.app_manager.engine_facade import EAEngineFacade
+from src.database.exceptions import ItemNotFoundInDB
 from src.exceptions.engine_exceptions import EngineCleanupFailed
 from src.genetic_engine.constraints_manager import ConstraintsManager
 from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_SCHEDULING_PENALTY, \
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, DEFAULT_GENERATIONS, P_CROSSOVER, P_MUTATION
 from src.genetic_engine.stopping_condition import StoppingCondition
-from src.site_data_parser.data_classes import SiteData
+from src.database.models import SiteData
 from src.genetic_engine.tools.crossover import cxTwoPoint
 from src.genetic_engine.tools.mutation import mutFlipBit
 
@@ -23,14 +25,17 @@ logger = logging.getLogger()
 
 class EAEngine(threading.Thread):
     SELECTION_METHODS = {
-        0: tools.selTournament
+        0: tools.selTournament,
+        tools.selTournament.__name__: 0
     }
     CROSSOVER_METHODS = {
-        0: cxTwoPoint
+        0: cxTwoPoint,
+        cxTwoPoint.__name__: 0
     }
 
     MUTATIONS = {
-        0: mutFlipBit
+        0: mutFlipBit,
+        mutFlipBit.__name__: 0
     }
     DEFAULT_SELECTION_METHOD_INDEX = 0
     DEFAULT_CROSSOVER_METHOD_INDEX = 0
@@ -57,7 +62,6 @@ class EAEngine(threading.Thread):
         self.stats = self._prepare_statistics_object()
 
         # define a single objective, maximizing fitness strategy:
-        # fixme: maybe need fitness max instead min.
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
         # prepare fitness evaluation function
@@ -69,7 +73,7 @@ class EAEngine(threading.Thread):
 
         self._prepare_genetic_operators()
 
-        self.constraints_manager = ConstraintsManager(site_manager=self.site_data,
+        self.constraints_manager = ConstraintsManager(db_site_data=site_data,
                                                       invalid_scheduling_penalty=INVALID_SCHEDULING_PENALTY,
                                                       # INVALID_SCHEDULING_PENALTY,
                                                       hard_constraints_penalty=HARD_CONSTRAINT_PENALTY,
@@ -87,12 +91,38 @@ class EAEngine(threading.Thread):
 
     def to_dict(self):
         return EAEngineFacade(
-            stopping_conditions=self.stopping_conditions_configuration,
+            site_data_id=self.site_data.id,
             population_size=self.population_size,
-            selection_method=self.toolbox.select.func.__name__,
-            crossover_method=self.toolbox.mate.func.__name__,
-            mutations=self.toolbox.mutate.func.__name__
-        )
+            stopping_conditions_configuration={k: asdict(v) for k, v in self.stopping_conditions_configuration.items()},
+            selection_method={"method_id": self.SELECTION_METHODS[self.toolbox.select.func.__name__],
+                              "params": self.toolbox.select.keywords},
+            crossover_method={"method_id": self.CROSSOVER_METHODS[self.toolbox.mate.func.__name__],
+                              "params": self.toolbox.mate.keywords},
+            mutations=[{"mutation_id": self.MUTATIONS[self.toolbox.mutate.func.__name__],
+                        "params": self.toolbox.mutate.keywords}]
+        ).to_dict()
+
+    @staticmethod
+    def from_json(json_data):
+        site_data_id = json_data['site_data_id']
+        site_data: SiteData = SiteData.query.filter_by(id=site_data_id).first()
+        if site_data is None:
+            raise ItemNotFoundInDB(f"item site_data with id {site_data_id} was not found in DB")
+
+        engine = EAEngine(site_data=site_data)
+        engine.set_population_size(json_data['population_size'])
+        for cond_id, params in json_data['stopping_conditions_configuration'].items():
+            engine.set_stopping_condition(cond_id, bound=params["bound"], force_apply_state=params["applied"])
+
+        engine.set_selection_method(method_id=json_data['selection_method']['method_id'],
+                                    params=json_data['selection_method']['params'])
+        engine.set_crossover_method(method_id=json_data['crossover_method']['method_id'],
+                                    params=json_data['crossover_method']['params'])
+        for mutation in json_data['mutations']:
+            engine.add_mutation(mutation_id=mutation['mutation_id'],
+                                params=mutation['params'])
+
+        return engine
 
     def set_population_size(self, size):
         self.population_size = size
@@ -110,7 +140,7 @@ class EAEngine(threading.Thread):
     def _prepare_genetic_operators(self):
         self.set_selection_method(self.DEFAULT_SELECTION_METHOD_INDEX, params={'tournsize': 2})
         self.set_crossover_method(self.DEFAULT_CROSSOVER_METHOD_INDEX, params={})
-        self.add_mutation(self.DEFAULT_MUTATION_INDEX, params={'indpb': 1.0 / self.site_data.get_individual_length()})
+        self.add_mutation(self.DEFAULT_MUTATION_INDEX, params={'indpb': 1.0 / self.site_data.individual_length})
 
     def _calculate_fitness(self, individual) -> Tuple[Union[int, Any]]:
         production_line_halb_compliance = self.constraints_manager.production_line_halb_compliance(schedule=individual)
@@ -147,8 +177,7 @@ class EAEngine(threading.Thread):
         """
 
         # return creator.Individual(np.random.randint(2, size=self.site_data_list.get_individual_dimensions()))
-        num_product_lines, num_products, num_hours = self.site_data.get_individual_dimensions()
-        production_line_sched_dims = (num_product_lines, num_hours)
+        production_line_sched_dims = (self.site_data.num_production_lines, self.site_data.total_working_hours)
 
         # create 2D manufacturing schedule
         product_line_schedule = np.random.randint(2, size=production_line_sched_dims)
@@ -157,7 +186,7 @@ class EAEngine(threading.Thread):
             total_production_schedule = total_production_schedule | line
 
         # create random sequence of product ids to fill the schedule and shuffle their order
-        prod_ids = [prod.id for prod in self.site_data.products]
+        prod_ids = [prod["id"] for prod in self.site_data.json_data["products"]]
         random.shuffle(prod_ids)
 
         # create the 3rd dimension of schedule
@@ -165,7 +194,7 @@ class EAEngine(threading.Thread):
         prods_schedule = []
 
         for prod_id in prod_ids:
-            prod_sched = np.zeros(shape=(num_hours,), dtype=int)
+            prod_sched = np.zeros(shape=(self.site_data.total_working_hours,), dtype=int)
 
             if total_ones > 0:  # there are available slots in total schedule
                 # randomly choose how many slots this product will take in production
@@ -226,7 +255,7 @@ class EAEngine(threading.Thread):
 
     def set_crossover_method(self, method_id, params: Dict):
         # probability is required for the algorithm and not for a specific method
-        probability = params.pop("probability", None)
+        probability = params.get("probability", None)
         self.crossover_probability = P_CROSSOVER if probability is None else probability
         self.toolbox.register("mate", self.CROSSOVER_METHODS[method_id], **params)
         logger.info(f"Crossover method changed to {self.CROSSOVER_METHODS[method_id].__name__}")
@@ -336,9 +365,10 @@ class EAEngine(threading.Thread):
         # Now release the lock
         self.pause_cond.release()
 
-    def set_stopping_condition(self, cond_id: str, bound):
+    def set_stopping_condition(self, cond_id: str, bound, force_apply_state=None):
+        applied = True if force_apply_state is None else force_apply_state
         logger.info(f"Set stopping condition to {cond_id}, bound {bound}")
-        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=True, bound=bound)
+        self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=applied, bound=bound)
 
     def delete_stopping_condition(self, cond_id: str):
         logger.info(f"delete stopping condition {cond_id}")

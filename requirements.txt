@@ -1,6 +1,7 @@
 # a must to install latest version of deap
 setuptools==57.5.0
 
+Flask-SQLAlchemy>=2.5.1
 dataclasses-json>=0.5.4
 ujson==4.0.2
 numpy>=1.21.5

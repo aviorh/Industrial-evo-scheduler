@@ -117,6 +117,7 @@
     "num_shifts": 3,
     "shift_duration": 6,
     "total_working_hours": 90,
+    "title": "Kiryat Gat Week 7",
     "recipes": {
         "0": {
             "123456": 40,

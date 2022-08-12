@@ -1,4 +1,5 @@
 import connexion
+from dataclasses import asdict
 
 from src.app_manager.app_manager import AppManager
 
@@ -35,8 +36,9 @@ def add_problem(body):
     
     app_manager = AppManager()
     site_data_id = body['site_data_id']
+    title = body['title']
 
-    new_problem = app_manager.create_problem(site_data_id=site_data_id)
+    new_problem = app_manager.create_problem(site_data_id=site_data_id, title=title)
     return new_problem.to_dict_format()
 
 
@@ -194,7 +196,7 @@ def get_ea_best_solution(problem_id):
     :rtype: object
     """
     app_manager = AppManager()
-    problem = app_manager.get_problem_by_id(problem_id)
+    _, problem = app_manager.get_problem_by_id(problem_id)
     return problem.get_current_best_solution()
 
 
@@ -221,7 +223,7 @@ def get_problem_by_id(problem_id):
     :rtype: object
     """
     app_manager = AppManager()
-    problem = app_manager.get_problem_by_id(problem_id)
+    _, problem = app_manager.get_problem_by_id(problem_id)
 
     return problem.to_dict_format()
 
@@ -231,7 +233,7 @@ def get_problems():
     :rtype: object
     """
     app_manager = AppManager()
-    return app_manager.problems
+    return [problem.to_dict_format() for problem in app_manager.problems.values()]
 
 
 def get_site_data_by_id(site_data_id):
@@ -248,15 +250,8 @@ def get_site_data_by_id(site_data_id):
 
 
 def get_sites_data():
-    """get all site-datas
-
-
-
-    :rtype: object
-    """
-
     app_manager = AppManager()
-    return app_manager.get_site_data()
+    return app_manager.get_sites_data()
 
 
 def remove_mutation(problem_id, mutation_id):
@@ -339,7 +334,7 @@ def get_fitness_logbook(problem_id):
     """
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
+    _, problem = am.get_problem_by_id(problem_id)
 
     return problem.get_fitness_logbook()
 
@@ -352,5 +347,5 @@ def get_fitness_graph(problem_id):
     """
 
     am = AppManager()
-    problem = am.get_problem_by_id(problem_id)
+    _, problem = am.get_problem_by_id(problem_id)
     return problem.get_fitness_graph_as_img()
