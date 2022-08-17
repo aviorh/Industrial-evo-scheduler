@@ -13,6 +13,7 @@ class SiteData(db.Model):
     num_products = db.Column(db.Integer)
     num_production_lines = db.Column(db.Integer)
     individual_length = db.Column(db.Integer)
+    schedule_start_date = db.Column(db.Date)  # week of schedule
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

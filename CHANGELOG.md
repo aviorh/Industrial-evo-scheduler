@@ -1,3 +1,36 @@
+## [18.08.2022, 02:00]
+
+### Added
+- site-data now includes `start_date` field, which tells the system on what week of the year the future schedules are
+relevant to, so we can properly place them in the timetable calendar.
+
+### Fixed
+- no need to write the site-data.json to a local file in DB, removed this.
+
+### Changed
+- refactor the solution schedule we send with `GET` request. The timetable is organized as json per production line,
+where each timetable is a list of calendar events. See the following example:
+  `{
+    "data": {
+        "0": [
+            {
+                "end_time": "2022-09-20 08:00:00",
+                "product_id": 0,
+                "product_name": "Bissli 100g",
+                "start_time": "2022-09-20 07:00:00"
+            },
+            {
+                "end_time": "2022-09-21 22:00:00",
+                "product_id": 1,
+                "product_name": "Bissli 150g",
+                "start_time": "2022-09-21 21:00:00"
+            }
+        ]
+    },
+    "start_date": "2022-09-20"
+}`
+  
+
 ## [13.08.2022, 14:00]
 
 ### Fixed

@@ -86,8 +86,7 @@ class AppManager(metaclass=SingletonMeta):
         return db_problem, problem
 
     def create_site_data(self, file: FileStorage):
-        self.save_site_data_file(file)
-        site_data, site_data_dict = self.parser.parse_file(file, self.site_data_counter)
+        site_data, site_data_dict = self.parser.parse_file(file)
 
         # update db
         with db.auto_commit():
@@ -96,9 +95,10 @@ class AppManager(metaclass=SingletonMeta):
             num_production_lines = len(site_data_dict["production_lines"])
             num_products = len(site_data_dict["products"])
             total_working_hours = site_data_dict["total_working_hours"]
+            schedule_start_date = datetime.strptime(site_data_dict["schedule_start_date"], "%Y-%m-%d").date()
             individual_length = total_working_hours * num_products * num_production_lines
             db_site_data = DBSiteData(title=full_title, json_data=site_data_dict, num_products=num_products,
-                                      num_production_lines=num_production_lines,
+                                      num_production_lines=num_production_lines, schedule_start_date=schedule_start_date,
                                       total_working_hours=total_working_hours, individual_length=individual_length)
             db.session.add(db_site_data)
 
@@ -113,7 +113,7 @@ class AppManager(metaclass=SingletonMeta):
         file_utils.save_file(
             file=file,
             dir_path='site_data',
-            file_name=f'site_data_{self.site_data_counter}.json'
+            file_name=f'site_data.json'
         )
 
     def delete_problem(self, problem_id: int):
@@ -195,6 +195,9 @@ class AppManager(metaclass=SingletonMeta):
         return problem
 
     def start_running(self, problem_id):
+        # fixme: BUG - when calling 'start run' immediately after app init, the app crashes over ORM session.
+        # the hotfix would be to always call get_problem_by_id endpoint before start running.
+
         db_problem, problem = self.get_problem_by_id(problem_id)
         problem.engine.start()
 

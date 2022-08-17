@@ -2,6 +2,7 @@ import connexion
 from dataclasses import asdict
 
 from src.app_manager.app_manager import AppManager
+from src.app_manager.schedule_facade import SolutionSchedule
 
 
 def add_mutation_method(body, problem_id):
@@ -194,7 +195,9 @@ def get_ea_best_solution(problem_id):
     """
     app_manager = AppManager()
     _, problem = app_manager.get_problem_by_id(problem_id)
-    return problem.get_current_best_solution()
+    raw_solution = problem.get_current_best_solution()
+    site_data = app_manager.get_site_data_by_id(problem.site_data_id)
+    return (SolutionSchedule.create_from_raw(raw_solution, site_data)).to_dict()
 
 
 def get_ea_progress(problem_id):
