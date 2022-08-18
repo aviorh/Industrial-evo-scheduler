@@ -21,6 +21,18 @@ class SolutionBrick:
             "end_time": str(self.end_time)
         }
 
+    @classmethod
+    def from_dict(cls, data_dict):
+        """
+        expects start_time/end_time to be in format Y-m-D H:M:S i.e 2022-09-20 19:30:00
+        :param data_dict:
+        :return:
+        """
+        res = cls(**data_dict)
+        res.start_time = datetime.strptime(res.start_time, "%Y-%m-%d %H:%M:%S")
+        res.end_time = datetime.strptime(res.end_time, "%Y-%m-%d %H:%M:%S")
+        return res
+
 
 @dataclass
 class SolutionSchedule:
@@ -32,6 +44,21 @@ class SolutionSchedule:
         start_date = cls._get_start_date(site_data)
         data = cls._create_schedule(raw, start_date, site_data)
         return cls(start_date=start_date, data=data)
+
+    def to_dict(self):
+        return {
+            "start_date": str(self.start_date),
+            "data": {key: [l.to_dict() for l in lst] for key, lst in self.data.items()}
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str]):
+        """
+        able to receive json data and create the proper solution
+        :param data:
+        :return:
+        """
+        return cls(start_date=data["start_date"], data={key: [SolutionBrick.from_dict(l) for l in lst] for key, lst in data["data"].items()})
 
     @classmethod
     def _create_schedule(cls, raw, start_date, site_data) -> Dict[str, List[SolutionBrick]]:
@@ -50,12 +77,6 @@ class SolutionSchedule:
                             SolutionBrick(product_id=prd, product_name=prd_name, start_time=start_time,
                                           end_time=end_time))
         return data
-
-    def to_dict(self):
-        return {
-            "start_date": str(self.start_date),
-            "data": {key: [l.to_dict() for l in lst] for key, lst in self.data.items()}
-        }
 
     @classmethod
     def _get_day_and_hour_offsets(cls, hour_num: int, site_data: SiteData) -> (int, int):
