@@ -56,16 +56,19 @@ def delete_stopping_condition(problem_id, cond_id):
     return 'do some magic!'
 
 
-def create_site_data(file=None):
+def create_site_data(file=None, body=None):
     """uploading a json file with site data
     :param file:
     :type file: str
+    :param body:
+    :type body: str
 
     :rtype: object
     """
 
+    title = body.get('title', "")
     app_manager = AppManager()
-    return app_manager.create_site_data(file)
+    return app_manager.create_site_data(file, title)
 
 
 def delete_problem(problem_id):

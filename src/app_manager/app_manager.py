@@ -85,12 +85,12 @@ class AppManager(metaclass=SingletonMeta):
         problem: Problem = self.problems[problem_id]
         return db_problem, problem
 
-    def create_site_data(self, file: FileStorage):
-        site_data, site_data_dict = self.parser.parse_file(file)
+    def create_site_data(self, file: FileStorage, title: str):
+        self.save_site_data_file(file)
+        site_data, site_data_dict = self.parser.parse_file(file, self.site_data_counter)
 
         # update db
         with db.auto_commit():
-            title = site_data_dict["title"]
             full_title = self._build_full_title(title)
             num_production_lines = len(site_data_dict["production_lines"])
             num_products = len(site_data_dict["products"])
