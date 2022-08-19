@@ -131,7 +131,7 @@ class AppManager(metaclass=SingletonMeta):
                     raise ItemNotFoundInDB(f"item site_data with id {site_data_id} was not found in DB")
                 db.session.delete(site_data)
 
-        return DBSiteData.query.all()
+        return [site_data.as_dict() for site_data in DBSiteData.query.all()]
 
     def add_mutation(self, problem_id, mutation_id, mutation_params):
         db_problem, problem = self.get_problem_by_id(problem_id)
