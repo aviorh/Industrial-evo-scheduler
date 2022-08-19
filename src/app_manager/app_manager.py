@@ -16,6 +16,10 @@ from src.database.database import db
 from src.database.models import SiteData as DBSiteData
 from src.database.models import Problem as DBProblem
 
+STATUS_PAUSED = 'paused'
+STATUS_IDLE = 'idle'
+STATUS_RUNNING = 'running'
+
 
 class AppManager(metaclass=SingletonMeta):
     """
@@ -40,7 +44,7 @@ class AppManager(metaclass=SingletonMeta):
             db_problems = DBProblem.query.all()
             for db_problem in db_problems:
                 with db.auto_commit():
-                    db_problem.status = 'idle'
+                    db_problem.status = STATUS_IDLE
                 self._create_problem_from_db(db_problem)
 
     def _create_problem_from_db(self, db_problem: DBProblem):
@@ -194,21 +198,24 @@ class AppManager(metaclass=SingletonMeta):
         problem.engine.start()
 
         with db.auto_commit():
-            db_problem.status = "running"
+            db_problem.status = STATUS_RUNNING
+            problem.status = STATUS_RUNNING
 
     def pause_problem(self, problem_id):
         db_problem, problem = self.get_problem_by_id(problem_id)
         problem.engine.pause()
 
         with db.auto_commit():
-            db_problem.status = "paused"
+            db_problem.status = STATUS_PAUSED
+            problem.status = STATUS_PAUSED
 
     def resume_problem(self, problem_id):
         db_problem, problem = self.get_problem_by_id(problem_id)
         problem.engine.resume()
 
         with db.auto_commit():
-            db_problem.status = "running"
+            db_problem.status = STATUS_RUNNING
+            problem.status = STATUS_RUNNING
 
     def cleanup_problem(self, problem_id):
         db_problem, problem = self.get_problem_by_id(problem_id)
@@ -216,7 +223,8 @@ class AppManager(metaclass=SingletonMeta):
 
         with db.auto_commit():
             db_problem.engine_data = problem.engine.to_dict()
-            db_problem.status = "idle"
+            db_problem.status = STATUS_IDLE
+            problem.status = STATUS_IDLE
 
     def set_stopping_condition(self, problem_id, cond_id, bound):
         problem: Problem = self.problems[problem_id]

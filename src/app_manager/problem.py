@@ -34,6 +34,7 @@ class Problem:
     engine: EAEngine
     title: str
     creation_time: str = field(default_factory=_get_datetime_str)
+    status: str = 'idle'  # idle/paused/running
     schedule: str = None  # json? dict?
 
     def to_dict_format(self):
@@ -43,6 +44,7 @@ class Problem:
             "engine": self.engine.to_dict(),
             "title": self.title,
             "creation_time": self.creation_time,
+            "status": self.status,
             "schedule": None
         }
 

@@ -1,4 +1,12 @@
+## [13.08.2022, 14:00]
+
+### Fixed
+- added status to problem in memory, returned in get_problem_by_id endpoint
+
+
 ## [7.08.2022, 14:00]
+
+### Added
 - integrated problems and sites-data to sqlite local db
 - automatically load data from db on application startup
 - db for solutions still not implemented (progress, raw solution).
