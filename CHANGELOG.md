@@ -1,3 +1,9 @@
+## [22.08.2022, 22:05]
+
+### Hotfix
+- fixed issue with detached sessions in flask-sqlalchemy, see [error details](https://docs.sqlalchemy.org/en/14/errors.html#error-bhk3).
+
+
 ## [18.08.2022, 02:00]
 
 ### Added
@@ -29,7 +35,7 @@ where each timetable is a list of calendar events. See the following example:
     },
     "start_date": "2022-09-20"
 }`
-  
+
 
 ## [13.08.2022, 14:00]
 
