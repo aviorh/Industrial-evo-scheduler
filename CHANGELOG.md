@@ -1,3 +1,8 @@
+## [22.08.2022, 22:05]
+
+### Hotfix
+- fixed issue with detached sessions in flask-sqlalchemy, see [error details](https://docs.sqlalchemy.org/en/14/errors.html#error-bhk3).
+
 ## [13.08.2022, 14:00]
 
 ### Fixed
