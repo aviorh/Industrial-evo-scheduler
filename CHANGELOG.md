@@ -1,3 +1,9 @@
+## [22.08.2022, 14:56]
+
+### Fixed
+- fixed issue where using get current solution endpoint when no solution is available would crash with exception. Returning empty solution `[]` instead.
+
+
 ## [22.08.2022, 22:05]
 
 ### Hotfix
