@@ -7,6 +7,7 @@ from werkzeug.datastructures import FileStorage
 import src.utils.file_utils as file_utils
 from src.app_manager.consts import STOPPING_CONDITIONS
 from src.app_manager.problem import Problem
+from src.app_manager.schedule_facade import SolutionSchedule
 from src.database.exceptions import ItemNotFoundInDB
 from src.genetic_engine.ea_engine import EAEngine
 from src.site_data_parser.data_classes import SiteData
@@ -15,6 +16,7 @@ from src.utils.singleton import SingletonMeta
 from src.database.database import db
 from src.database.models import SiteData as DBSiteData
 from src.database.models import Problem as DBProblem
+from src.database.models import Solution as DBSolution
 
 STATUS_PAUSED = 'paused'
 STATUS_IDLE = 'idle'
@@ -86,8 +88,7 @@ class AppManager(metaclass=SingletonMeta):
         return db_problem, problem
 
     def create_site_data(self, file: FileStorage, title: str):
-        self.save_site_data_file(file)
-        site_data, site_data_dict = self.parser.parse_file(file, self.site_data_counter)
+        site_data, site_data_dict = self.parser.parse_file(file)
 
         # update db
         with db.auto_commit():
@@ -268,3 +269,23 @@ class AppManager(metaclass=SingletonMeta):
     def get_sites_data(self):
         return [site_data.as_dict() for site_data in DBSiteData.query.all()]
 
+    def get_saved_solutions_from_db(self):
+        return [solution.as_dict() for solution in DBSolution.query.all()]
+
+    def get_solution_from_db_by_id(self, solution_id) -> DBSolution:
+        # get solution from db
+        db_solution: DBSolution = DBSolution.query.filter_by(id=solution_id).first()
+        if db_solution is None:
+            raise ItemNotFoundInDB(f"item solution with id {solution_id} was not found in DB")
+        return db_solution
+
+    def save_solution_in_db(self, problem_id, title):
+        _, problem = self.get_problem_by_id(problem_id)
+        site_data = self.get_site_data_by_id(problem.site_data_id)
+        current_solution = problem.get_current_best_solution()
+        formatted_solution = SolutionSchedule.create_from_raw(current_solution, site_data)
+
+        with db.auto_commit():
+            db_solution = DBSolution(problem_id=problem_id, solution=formatted_solution.to_dict(), title=title,
+                                     fitness=current_solution.fitness.values[0], time_modified=datetime.now())
+            db.session.add(db_solution)

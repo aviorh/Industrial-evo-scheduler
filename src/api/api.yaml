@@ -479,25 +479,7 @@ paths:
           description: Numeric ID to get problem
       responses:
         '200':
-          description: get best solution
-          content:
-            application/json:
-              schema:
-                type: object
-      x-codegen-request-body-name: body
-    put:
-      summary: manually update solution
-      operationId: src.api.api.update_current_ea_solution
-      parameters:
-        - in: path
-          name: problem_id
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID to get problem
-      responses:
-        '200':
-          description: best solution re-evaluated
+          description: get best solution from engine
           content:
             application/json:
               schema:
@@ -541,3 +523,80 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
+  /favorite-solution:
+    get:
+      summary: get all saved solutions
+      operationId: src.api.api.fetch_all_solutions_from_db
+      responses:
+        '200':
+          description: get solution saved in db
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+    post:
+      summary: save solution in db
+      operationId: src.api.api.save_favorite_solution_in_db
+      requestBody:
+        description: related problem id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                problem_id:
+                  type: integer
+                  format: int32
+                title:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: successfully saved solution in db
+      x-codegen-request-body-name: body
+  /favorite-solution/{solution_id}:
+    get:
+      summary: get favorite solution (saved in db) by id
+      operationId: src.api.api.fetch_favorite_solution_from_db
+      parameters:
+        - in: path
+          name: solution_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to get favorite solution
+      responses:
+        '200':
+          description: get solution saved in db
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+    put:
+      summary: update saved solution
+      operationId: src.api.api.update_favorite_solution_in_db
+      parameters:
+        - in: path
+          name: solution_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID for solution to update
+      requestBody:
+        description: solution events list
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '200':
+          description: best solution re-evaluated
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+

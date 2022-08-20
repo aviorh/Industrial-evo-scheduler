@@ -55,6 +55,10 @@ class Solution(db.Model):
     problem_id = db.Column(db.Integer, db.ForeignKey('problems.id'), nullable=False)
     problem = db.relationship('Problem')
 
-    best_solution = db.Column(db.JSON)
-    min_fitness = db.Column(db.JSON)
-    average_fitness = db.Column(db.JSON)
+    title = db.Column(db.Text)
+    solution = db.Column(db.JSON)
+    fitness = db.Column(db.Float)
+    time_modified = db.Column(db.DateTime)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

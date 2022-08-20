@@ -52,7 +52,7 @@ class SolutionSchedule:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str]):
+    def from_dict(cls, data):
         """
         able to receive json data and create the proper solution
         :param data:

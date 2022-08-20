@@ -352,3 +352,28 @@ def get_fitness_graph(problem_id):
     am = AppManager()
     _, problem = am.get_problem_by_id(problem_id)
     return problem.get_fitness_graph_as_img()
+
+
+def fetch_all_solutions_from_db():
+    app_manager = AppManager()
+    return app_manager.get_saved_solutions_from_db()
+
+
+def save_favorite_solution_in_db(body):
+    problem_id = body["problem_id"]
+    title = body["title"]
+    am = AppManager()
+    am.save_solution_in_db(problem_id, title)
+    return "solution saved successfully"
+
+
+def fetch_favorite_solution_from_db(solution_id):
+    app_manager = AppManager()
+    return (app_manager.get_solution_from_db_by_id(solution_id)).as_dict()
+
+
+def update_favorite_solution_in_db(solution_id, body):
+    """
+    body - json list of events that describe the solution. or maybe just the events that changed? or their index?
+    """
+    return "not implemented yet"
