@@ -28,6 +28,27 @@ def cxTwoPoint(ind1, ind2):
     return ind1, ind2
 
 
+def cxOnePoint(ind1, ind2):
+    """Executes a one point crossover on the input :term:`sequence` individuals.
+    The two individuals are modified in place. The resulting individuals will
+    respectively have the length of the other.
+
+    :param ind1: The first individual participating in the crossover.
+    :param ind2: The second individual participating in the crossover.
+    :returns: A tuple of two individuals.
+
+    This function uses the :func:`~random.randint` function from the
+    python base :mod:`random` module.
+    """
+    cxpoint1_x = random.randint(1, min(ind1.shape[0], ind2.shape[0]))
+    cxpoint1_z = random.randint(1, min(ind1.shape[2], ind2.shape[2]))
+
+    ind1[cxpoint1_x:, :, cxpoint1_z:], ind2[cxpoint1_x:, :, cxpoint1_z:] = \
+        ind2[cxpoint1_x:, :, cxpoint1_z:].copy(), ind1[cxpoint1_x:, :, cxpoint1_z:].copy()
+
+    return ind1, ind2
+
+
 def _get_cx_points(size):
     cxpoint1 = random.randint(1, size)
     cxpoint2 = random.randint(1, size - 1)
