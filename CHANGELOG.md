@@ -1,3 +1,9 @@
+## [24.08.2022, 18:42]
+
+### Added
+- added selection, crossover and mutation methods (1 of each).
+
+
 ## [22.08.2022, 14:56]
 
 ### Fixed
