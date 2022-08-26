@@ -8,6 +8,7 @@
                 "2": 500,
                 "3": 250
             },
+            "production_rate": 50,
             "manpower": 10,
             "setup_time": 1.5,
             "ffo": 4
@@ -19,6 +20,7 @@
                 "1": 250,
                 "3": 450
             },
+            "production_rate": 12.5,
             "manpower": 12,
             "setup_time": 0.5,
             "ffo": 3
@@ -28,6 +30,7 @@
             "product_ids": {
                 "2": 350
             },
+            "production_rate": 20.5,
             "manpower": 6,
             "setup_time": 1.0,
             "ffo": 5
@@ -40,8 +43,8 @@
             "name": "Bissli 100g",
             "priority": 1,
             "weight": 100,
-            "stock": 50,
-            "forecast": 100,
+            "stock": 500,
+            "forecast": 7200,
             "unit_package_id": 0,
             "retailer_package_id": 0,
             "units_per_retailer_package_unit": 48
@@ -53,7 +56,7 @@
             "priority": 1,
             "weight": 150,
             "stock": 0,
-            "forecast": 80,
+            "forecast": 38500,
             "unit_package_id": 1,
             "retailer_package_id": 1,
             "units_per_retailer_package_unit": 25
@@ -64,8 +67,8 @@
             "name": "Bamba 50g",
             "priority": 2,
             "weight": 50,
-            "stock": 50,
-            "forecast": 300,
+            "stock": 2500,
+            "forecast": 25000,
             "unit_package_id": 2,
             "retailer_package_id": 2,
             "units_per_retailer_package_unit": 42
@@ -76,8 +79,8 @@
             "name": "Apropo 50g",
             "priority": 3,
             "weight": 50,
-            "stock": 10,
-            "forecast": 100,
+            "stock": 190,
+            "forecast": 12500,
             "unit_package_id": 3,
             "retailer_package_id": 3,
             "units_per_retailer_package_unit": 50
@@ -121,31 +124,31 @@
     "title": "Kiryat Gat Week 7",
     "recipes": {
         "0": {
-            "123456": 40,
-            "111223": 45,
-            "587422": 2
+            "123456": 0.05,
+            "111223": 0.45,
+            "587422": 0.05
         },
         "1": {
-            "112589": 58,
-            "587422": 30,
-            "788856": 5
+            "112589": 0.58,
+            "587422": 0.3,
+            "788856": 0.25
         },
         "2": {
-            "458788": 7,
-            "589699": 12,
-            "788856": 52,
-            "652588": 23
+            "458788": 0.07,
+            "589699": 0.12,
+            "788856": 0.12,
+            "652588": 0.23
         }
     },
     "raw_materials_stock": {
-        "123456": 40,
-        "111223": 45,
-        "112589": 58,
-        "587422": 30,
-        "458788": 7,
-        "589699": 12,
-        "788856": 52,
-        "652588": 23
+        "123456": 24000,
+        "111223": 4500,
+        "112589": 5800,
+        "587422": 13400,
+        "458788": 7000,
+        "589699": 12000,
+        "788856": 5200,
+        "652588": 9700
     },
     "product_packaging_unit": {
         "0": 230,

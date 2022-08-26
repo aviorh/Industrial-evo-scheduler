@@ -287,5 +287,8 @@ class AppManager(metaclass=SingletonMeta):
 
         with db.auto_commit():
             db_solution = DBSolution(problem_id=problem_id, solution=formatted_solution.to_dict(), title=title,
-                                     fitness=current_solution.fitness.values[0], time_modified=datetime.now())
+                                     fitness=current_solution.fitness.values[0], time_modified=datetime.now(),
+                                     raw_materials_usage=formatted_solution.raw_materials_usage,
+                                     forecast_achieved=formatted_solution.forecast_achieved,
+                                     product_line_utilization=formatted_solution.product_line_utilization)
             db.session.add(db_solution)

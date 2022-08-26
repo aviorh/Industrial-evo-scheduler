@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "9f219e93-ee2e-43c0-9236-d53899987267",
-		"name": "final project collection",
+		"_postman_id": "f9c27aa5-1b57-4915-be22-bd38f0c6e018",
+		"name": "final project collection avior",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -35,40 +35,6 @@
 			"response": []
 		},
 		{
-			"name": "get all site data",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Users/shira/PycharmProjects/Industrial-evo-scheduler/tests/files/site_data.json"
-						}
-					]
-				},
-				"url": {
-					"raw": "localhost:9997/api/problem/0/progress",
-					"host": [
-						"localhost"
-					],
-					"port": "9997",
-					"path": [
-						"api",
-						"problem",
-						"0",
-						"progress"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "create problem",
 			"request": {
 				"method": "POST",
@@ -91,6 +57,34 @@
 					"path": [
 						"api",
 						"problem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "save solution in db",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"problem_id\": 1,\n    \"title\": \"Best Solution Run #11\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9997/api/favorite-solution",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"favorite-solution"
 					]
 				}
 			},
@@ -137,6 +131,26 @@
 			"response": []
 		},
 		{
+			"name": "get solution by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/favorite-solution/1",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"favorite-solution",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get all problems",
 			"request": {
 				"method": "GET",
@@ -150,6 +164,25 @@
 					"path": [
 						"api",
 						"problem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all saved solutions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/favorite-solution",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"favorite-solution"
 					]
 				}
 			},

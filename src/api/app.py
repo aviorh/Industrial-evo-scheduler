@@ -12,7 +12,7 @@ def create_app():
 
     app = connexion_app.app
     current_dir_path = os.path.dirname(__file__)
-    current_db_path = f"{current_dir_path}/../../iplanner_new6.db".replace("C:", "")
+    current_db_path = f"{current_dir_path}/../../iplanner_new7.db".replace("C:", "")
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{current_db_path}'
     db.init_app(app)
 

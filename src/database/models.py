@@ -58,6 +58,9 @@ class Solution(db.Model):
     title = db.Column(db.Text)
     solution = db.Column(db.JSON)
     fitness = db.Column(db.Float)
+    product_line_utilization = db.Column(db.JSON)
+    forecast_achieved = db.Column(db.JSON)
+    raw_materials_usage = db.Column(db.JSON)
     time_modified = db.Column(db.DateTime)
 
     def as_dict(self):
