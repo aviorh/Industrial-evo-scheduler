@@ -376,4 +376,10 @@ def update_favorite_solution_in_db(solution_id, body):
     """
     body - json list of events that describe the solution. or maybe just the events that changed? or their index?
     """
-    return "not implemented yet"
+    production_line = body['production_line']
+    key = body['key']
+    new_product_id = body['new_product']
+    new_datetime = body['new_datetime']
+    am = AppManager()
+    updated_db_solution = am.edit_saved_solution(solution_id, production_line, key, new_product_id, new_datetime)
+    return updated_db_solution.as_dict()

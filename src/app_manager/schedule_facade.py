@@ -6,8 +6,11 @@ from dataclasses import dataclass
 from src.database.models import SiteData
 from src.app_manager.solution_analysis import SolutionAnalysis
 
+
 @dataclass
 class SolutionBrick:
+    production_line: int
+    key: int
     product_id: int
     product_name: str
     start_time: datetime
@@ -15,6 +18,8 @@ class SolutionBrick:
 
     def to_dict(self):
         return {
+            "production_line": self.production_line,
+            "key": self.key,
             "product_id": self.product_id,
             "product_name": self.product_name,
             "start_time": str(self.start_time),
@@ -75,7 +80,7 @@ class SolutionSchedule:
 
         for prd_line in range(site_data.num_production_lines):
             for prd in range(site_data.num_products):
-                for hr in range(site_data.total_working_hours):
+                for index, hr in enumerate(range(site_data.total_working_hours)):
                     if raw[prd_line][prd][hr] == 1:
                         prd_name = cls._get_product_name(site_data, prd)
                         day, hour_in_day = cls._get_day_and_hour_offsets(hr, site_data)
@@ -83,8 +88,8 @@ class SolutionSchedule:
                                                                                                 hours=hour_in_day)
                         end_time = datetime.strptime(str(start_time), "%Y-%m-%d %H:%M:%S") + timedelta(hours=1)
                         (data[str(prd_line)]).append(
-                            SolutionBrick(product_id=prd, product_name=prd_name, start_time=start_time,
-                                          end_time=end_time))
+                            SolutionBrick(production_line=prd_line, key=index, product_id=prd, product_name=prd_name,
+                                          start_time=start_time, end_time=end_time))
         return data
 
     @classmethod

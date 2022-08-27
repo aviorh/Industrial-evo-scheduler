@@ -590,6 +590,20 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                production_line:
+                  type: integer
+                  format: int32
+                key:
+                  type: integer
+                  format: int32
+                new_product:
+                  type: integer
+                  format: int32
+                new_datetime:
+                  type: array
+                  items:
+                    type: string
         required: true
       responses:
         '200':

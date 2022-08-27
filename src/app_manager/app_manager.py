@@ -1,6 +1,6 @@
 from copy import deepcopy
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 from werkzeug.datastructures import FileStorage
 
@@ -292,3 +292,33 @@ class AppManager(metaclass=SingletonMeta):
                                      forecast_achieved=formatted_solution.forecast_achieved,
                                      product_line_utilization=formatted_solution.product_line_utilization)
             db.session.add(db_solution)
+
+    def edit_saved_solution(self, solution_id: int, production_line: int, key: int, new_product_id: int,
+                            new_datetime: List[str]) -> DBSolution:
+        db_solution: DBSolution = self.get_solution_from_db_by_id(solution_id)
+        site_data: DBSiteData = self.get_site_data_by_id(self.problems[db_solution.problem_id].site_data_id)
+
+        new_product_name = None
+        for product in site_data.json_data['products']:
+            if product['id'] == new_product_id:
+                new_product_name = product['name']
+                break
+
+        found_event = False
+        with db.auto_commit():
+            solution_events = deepcopy(db_solution.solution['data'])
+            for event in solution_events:
+                if event['key'] == key:
+                    found_event = True
+                    event['product_id'] = new_product_id
+                    event['product_name'] = new_product_name
+                    event['start_time'] = new_datetime[0]
+                    event['end_time'] = new_datetime[1]
+                    break
+
+            if not found_event:
+                raise ItemNotFoundInDB(f"in solution {solution_id}, production_line {production_line}, key {key} doesnt exist")
+
+            db_solution.solution['data'] = solution_events
+
+        return db_solution
