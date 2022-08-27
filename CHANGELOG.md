@@ -1,3 +1,20 @@
+## [24.08.2022, 18:42]
+
+### Added
+- added selection, crossover and mutation methods (1 of each).
+
+
+## [22.08.2022, 14:56]
+
+### Fixed
+- fixed issue where using get current solution endpoint when no solution is available would crash with exception. Returning empty solution `[]` instead.
+
+
+## [22.08.2022, 22:05]
+
+### Hotfix
+- fixed issue with detached sessions in flask-sqlalchemy, see [error details](https://docs.sqlalchemy.org/en/14/errors.html#error-bhk3).
+
 ## [13.08.2022, 14:00]
 
 ### Fixed
