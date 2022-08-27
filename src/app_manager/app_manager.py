@@ -151,18 +151,17 @@ class AppManager(metaclass=SingletonMeta):
 
     def set_population_size(self, problem_id, population_size):
         # update problem instance in memory
-        self.problems[problem_id].engine.set_population_size(population_size)
+        db_problem, problem = self.get_problem_by_id(problem_id)
+        problem.engine.set_population_size(population_size)
 
         # update problem instance on db
         with db.auto_commit():
-            db_problem, _ = self.get_problem_by_id(problem_id)
-
             tmp_data = deepcopy(db_problem.engine_data)
             tmp_data["population_size"] = population_size
 
             db_problem.engine_data = tmp_data
 
-        return db_problem
+        return problem
 
     def set_crossover_method(self, problem_id, crossover_id, crossover_params):
         problem: Problem = self.problems[problem_id]
@@ -226,19 +225,19 @@ class AppManager(metaclass=SingletonMeta):
             db_problem.status = STATUS_IDLE
             problem.status = STATUS_IDLE
 
-    def set_stopping_condition(self, problem_id, cond_id, bound):
+    def set_stopping_condition(self, problem_id, cond_id, bound, applied):
         problem: Problem = self.problems[problem_id]
         cond_str_id = STOPPING_CONDITIONS.get(cond_id)
         if cond_str_id == "TIME_STOPPING_CONDITION":
             # minutes to seconds
             bound = bound * 60
-        problem.engine.set_stopping_condition(cond_str_id, bound)
+        problem.engine.set_stopping_condition(cond_str_id, bound, applied)
 
         with db.auto_commit():
             db_problem, _ = self.get_problem_by_id(problem_id)
 
             tmp_data = deepcopy(db_problem.engine_data)
-            tmp_data["stopping_conditions_configuration"][cond_str_id]["applied"] = True
+            tmp_data["stopping_conditions_configuration"][cond_str_id]["applied"] = applied
             tmp_data["stopping_conditions_configuration"][cond_str_id]["bound"] = bound
 
             db_problem.engine_data = tmp_data
