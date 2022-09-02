@@ -2,12 +2,14 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Dict, List
 
+import numpy as np
 from werkzeug.datastructures import FileStorage
 
 import src.utils.file_utils as file_utils
 from src.app_manager.consts import STOPPING_CONDITIONS
 from src.app_manager.problem import Problem
 from src.app_manager.schedule_facade import SolutionSchedule
+from src.app_manager.solution_analysis import SolutionAnalysis
 from src.database.exceptions import ItemNotFoundInDB
 from src.genetic_engine.ea_engine import EAEngine
 from src.site_data_parser.data_classes import SiteData
@@ -306,8 +308,17 @@ class AppManager(metaclass=SingletonMeta):
 
         found_event = False
         with db.auto_commit():
-            solution_events = deepcopy(db_solution.solution['data'])
-            for event in solution_events:
+            new_solution = deepcopy(db_solution.solution)
+            raw_solution: np.ndarray = SolutionSchedule.convert_to_raw(new_solution['data'], site_data)
+            SolutionSchedule.verify_conversion(raw_solution, new_solution, site_data)
+
+            db_solution.fitness = self.problems[db_solution.problem_id].engine._calculate_fitness(raw_solution)
+
+            new_solution['forecast_achieved'] = SolutionAnalysis.get_achieved_forecast(raw_solution, site_data)
+            new_solution['raw_materials_usage'] = SolutionAnalysis.get_raw_materials_usage(raw_solution, site_data)
+            new_solution['product_line_utilization'] = SolutionAnalysis.get_product_lines_utilization(raw_solution, site_data)
+
+            for event in new_solution['data'][str(production_line)]:
                 if event['key'] == key:
                     found_event = True
                     event['product_id'] = new_product_id
@@ -319,6 +330,6 @@ class AppManager(metaclass=SingletonMeta):
             if not found_event:
                 raise ItemNotFoundInDB(f"in solution {solution_id}, production_line {production_line}, key {key} doesnt exist")
 
-            db_solution.solution['data'] = solution_events
+            db_solution.solution = new_solution
 
         return db_solution

@@ -16,3 +16,4 @@ dacite
 six
 Werkzeug
 flask-cors
+deepdiff~=5.8.1

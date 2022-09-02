@@ -2,6 +2,7 @@ import numpy as np
 from datetime import datetime, date, timedelta
 from typing import List, Dict, Optional
 from dataclasses import dataclass
+from deepdiff import DeepDiff
 
 from src.database.models import SiteData
 from src.app_manager.solution_analysis import SolutionAnalysis
@@ -46,6 +47,23 @@ class SolutionSchedule:
     product_line_utilization: Dict[int, float]  # line_id: util %
     forecast_achieved: Dict[int, float]  # product_id: produced / forecast %
     raw_materials_usage: Dict[str, float]  # material_name: % of material used
+
+    @staticmethod
+    def verify_conversion(raw, formatted, site_data):
+        test = SolutionSchedule.create_from_raw(raw, site_data).to_dict()
+        result = DeepDiff(test['data'], formatted['data'], ignore_order=True)
+        if result:
+            raise ValueError("solution conversion didn't match.")
+
+    @staticmethod
+    def convert_to_raw(solution_data: Dict, site_data: SiteData) -> np.ndarray:
+        raw = np.zeros(shape=(site_data.num_production_lines, site_data.num_products, site_data.total_working_hours),
+                       dtype=int)
+        for prd_line in range(site_data.num_production_lines):
+            for event in solution_data[str(prd_line)]:
+                raw[prd_line, event['product_id'], event['key']] = 1
+
+        return raw
 
     @classmethod
     def create_from_raw(cls, raw: np.ndarray, site_data: SiteData):
