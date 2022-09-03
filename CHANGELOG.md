@@ -1,5 +1,12 @@
 ## [03.09.2022, 14:25]
 
+### Fixed
+- setting stopping conditions 
+- ui adjustments
+
+
+## [03.09.2022, 14:25]
+
 ### Added
 - added all endpoints for solution handling - save/edit/get by id/get all.
 - added SolutionAnalysis class to handle analysis.
