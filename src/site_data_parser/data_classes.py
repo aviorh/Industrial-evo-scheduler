@@ -1,3 +1,5 @@
+import datetime
+
 import numpy as np
 
 from typing import Dict, List, Tuple
@@ -18,6 +20,7 @@ class ProductionLine(Base):
     manpower: int
     setup_time: float  # time to setup the production line once per day of work
     ffo: int
+    production_rate: float  # in KG, per hour.
 
 
 @dataclass_json
@@ -64,17 +67,19 @@ class SiteData:
     :param usual_start_hour: usual start hour of the site on a regular day
     :param usual_end_hour: usual end hour of the site on a regular day
     :param shift_duration:
-    :param recipes: recipe-id -> dictionary containing all ingredients and quantities
+    :param recipes: recipe-id -> bulk_product_id -> quantity  in kgs (per kg of bulk product)
     :param rawMaterialsStock: raw material id -> raw material existing stock in kgs
     :param product_packaging_unit: package id -> existing stock quantity. ex: Bissli Grill 100g unit package
     :param retailer_packaging_unit: packagge id -> existing stock quantity. ex: Cardboard-box Bissli Grill 100g 1 unit package
+    :param schedule_start_date: datetime.date -> DD-MM-YYYY start date of when this site data is relevant. schedule is for 1 week.
     """
-    id: int
+    # id: int
     title: str
     production_lines: List[ProductionLine]
     products: List[Product]
     bulk_products: List[BulkProduct]
 
+    schedule_start_date: str
     usual_start_hour: int
     usual_end_hour: int
     num_shifts: int
@@ -90,7 +95,7 @@ class SiteData:
     def from_dict(cls, data):
         return from_dict(data_class=cls, data=data)
 
-    def print_schedule(self, schedule: np.ndarray):
+    def DEPRECATED_print_schedule(self, schedule: np.ndarray):
         schedule = schedule.view(dtype=np.ndarray)
         for prod_line in range(schedule.shape[0]):
             sched_per_line = np.zeros(shape=(schedule.shape[2],), dtype=int)

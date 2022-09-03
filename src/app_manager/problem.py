@@ -52,7 +52,7 @@ class Problem:
         # here we only read from HOF, so no need to worry about thread-safety
         try:
             current_best_solution = self.engine.hall_of_fame.items[0]
-            return current_best_solution.tolist()
+            return current_best_solution
         except IndexError:  # no current solution exist
             return []
 

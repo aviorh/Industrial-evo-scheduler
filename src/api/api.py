@@ -2,6 +2,7 @@ import connexion
 from dataclasses import asdict
 
 from src.app_manager.app_manager import AppManager
+from src.app_manager.schedule_facade import SolutionSchedule
 
 
 def add_mutation_method(body, problem_id):
@@ -197,7 +198,9 @@ def get_ea_best_solution(problem_id):
     """
     app_manager = AppManager()
     _, problem = app_manager.get_problem_by_id(problem_id)
-    return problem.get_current_best_solution()
+    raw_solution = problem.get_current_best_solution()
+    site_data = app_manager.get_site_data_by_id(problem.site_data_id)
+    return (SolutionSchedule.create_from_raw(raw_solution, site_data)).to_dict()
 
 
 def get_ea_progress(problem_id):
@@ -349,3 +352,34 @@ def get_fitness_graph(problem_id):
     am = AppManager()
     _, problem = am.get_problem_by_id(problem_id)
     return problem.get_fitness_graph_as_img()
+
+
+def fetch_all_solutions_from_db():
+    app_manager = AppManager()
+    return app_manager.get_saved_solutions_from_db()
+
+
+def save_favorite_solution_in_db(body):
+    problem_id = body["problem_id"]
+    title = body["title"]
+    am = AppManager()
+    am.save_solution_in_db(problem_id, title)
+    return "solution saved successfully"
+
+
+def fetch_favorite_solution_from_db(solution_id):
+    app_manager = AppManager()
+    return (app_manager.get_solution_from_db_by_id(solution_id)).as_dict()
+
+
+def update_favorite_solution_in_db(solution_id, body):
+    """
+    body - json list of events that describe the solution. or maybe just the events that changed? or their index?
+    """
+    production_line = body['production_line']
+    key = body['key']
+    new_product_id = body['new_product']
+    new_datetime = body['new_datetime']
+    am = AppManager()
+    updated_db_solution = am.edit_saved_solution(solution_id, production_line, key, new_product_id, new_datetime)
+    return updated_db_solution.as_dict()
