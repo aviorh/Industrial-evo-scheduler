@@ -32,3 +32,29 @@ def mutFlipBit(individual, indpb):
             individual[i, j, k] = type(individual[i, j, k])(not individual[i, j, k])
 
     return individual,
+
+
+def mutShuffleIndexes(individual, indpb):
+    """Shuffle the attributes of the input individual and return the mutant.
+    The *individual* is expected to be a :term:`sequence`. The *indpb* argument is the
+    probability of each attribute to be moved. Usually this mutation is applied on
+    vector of indices.
+
+    :param individual: Individual to be mutated.
+    :param indpb: Independent probability for each attribute to be exchanged to
+                  another position.
+    :returns: A tuple of one individual.
+
+    This function uses the :func:`~random.random` and :func:`~random.randint`
+    functions from the python base :mod:`random` module.
+    """
+    num_possible_shuffles = round(individual.size / 2)
+    shape = individual.shape
+    for i in range(num_possible_shuffles):
+        if random.random() < indpb:
+            swap_idx_a = (random.randint(0, shape[0] - 1), random.randint(0, shape[1] - 1), random.randint(0, shape[2] - 1))
+            swap_idx_b = (random.randint(0, shape[0] - 1), random.randint(0, shape[1] - 1), random.randint(0, shape[2] - 1))
+            if swap_idx_a != swap_idx_b:
+                individual[swap_idx_a], individual[swap_idx_b] = individual[swap_idx_b], individual[swap_idx_a]
+
+    return individual,

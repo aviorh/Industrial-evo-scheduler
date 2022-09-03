@@ -16,8 +16,8 @@ from src.genetic_engine.ea_conf import RANDOM_SEED, HALL_OF_FAME_SIZE, INVALID_S
     HARD_CONSTRAINT_PENALTY, SOFT_CONSTRAINT_PENALTY, POPULATION_SIZE, DEFAULT_GENERATIONS, P_CROSSOVER, P_MUTATION
 from src.genetic_engine.stopping_condition import StoppingCondition
 from src.database.models import SiteData
-from src.genetic_engine.tools.crossover import cxTwoPoint
-from src.genetic_engine.tools.mutation import mutFlipBit
+from src.genetic_engine.tools.crossover import cxTwoPoint, cxOnePoint
+from src.genetic_engine.tools.mutation import mutFlipBit, mutShuffleIndexes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -26,16 +26,22 @@ logger = logging.getLogger()
 class EAEngine(threading.Thread):
     SELECTION_METHODS = {
         0: tools.selTournament,
-        tools.selTournament.__name__: 0
+        tools.selTournament.__name__: 0,
+        1: tools.selRoulette,
+        tools.selRoulette.__name__: 1
     }
     CROSSOVER_METHODS = {
         0: cxTwoPoint,
-        cxTwoPoint.__name__: 0
+        cxTwoPoint.__name__: 0,
+        1: cxOnePoint,
+        cxOnePoint.__name__: 1
     }
 
     MUTATIONS = {
         0: mutFlipBit,
-        mutFlipBit.__name__: 0
+        mutFlipBit.__name__: 0,
+        1: mutShuffleIndexes,
+        mutShuffleIndexes.__name__: 1
     }
     DEFAULT_SELECTION_METHOD_INDEX = 0
     DEFAULT_CROSSOVER_METHOD_INDEX = 0
