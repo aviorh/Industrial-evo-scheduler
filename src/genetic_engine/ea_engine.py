@@ -371,8 +371,7 @@ class EAEngine(threading.Thread):
         # Now release the lock
         self.pause_cond.release()
 
-    def set_stopping_condition(self, cond_id: str, bound, force_apply_state=None):
-        applied = True if force_apply_state is None else force_apply_state
+    def set_stopping_condition(self, cond_id: str, bound, applied):
         logger.info(f"Set stopping condition to {cond_id}, bound {bound}")
         self.stopping_conditions_configuration[cond_id] = StoppingCondition(applied=applied, bound=bound)
 

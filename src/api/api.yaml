@@ -347,6 +347,8 @@ paths:
                   oneOf:
                     - type: integer
                     - type: string
+                applied:
+                  type: boolean
       responses:
         '200':
           description: population size modified successfully

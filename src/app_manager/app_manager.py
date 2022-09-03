@@ -139,7 +139,7 @@ class AppManager(metaclass=SingletonMeta):
                     raise ItemNotFoundInDB(f"item site_data with id {site_data_id} was not found in DB")
                 db.session.delete(site_data)
 
-        return DBSiteData.query.all()
+        return [site_data.as_dict() for site_data in DBSiteData.query.all()]
 
     def add_mutation(self, problem_id, mutation_id, mutation_params):
         db_problem, problem = self.get_problem_by_id(problem_id)
@@ -232,19 +232,19 @@ class AppManager(metaclass=SingletonMeta):
             db_problem.status = STATUS_IDLE
             problem.status = STATUS_IDLE
 
-    def set_stopping_condition(self, problem_id, cond_id, bound):
+    def set_stopping_condition(self, problem_id, cond_id, bound, applied):
         problem: Problem = self.problems[problem_id]
         cond_str_id = STOPPING_CONDITIONS.get(cond_id)
         if cond_str_id == "TIME_STOPPING_CONDITION":
             # minutes to seconds
             bound = bound * 60
-        problem.engine.set_stopping_condition(cond_str_id, bound)
+        problem.engine.set_stopping_condition(cond_str_id, bound, applied)
 
         with db.auto_commit():
             db_problem, _ = self.get_problem_by_id(problem_id)
 
             tmp_data = deepcopy(db_problem.engine_data)
-            tmp_data["stopping_conditions_configuration"][cond_str_id]["applied"] = True
+            tmp_data["stopping_conditions_configuration"][cond_str_id]["applied"] = applied
             tmp_data["stopping_conditions_configuration"][cond_str_id]["bound"] = bound
 
             db_problem.engine_data = tmp_data

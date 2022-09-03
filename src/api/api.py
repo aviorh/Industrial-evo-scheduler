@@ -186,7 +186,7 @@ def set_stopping_condition(body, problem_id, cond_id):
         body = connexion.request.get_json()
 
     am = AppManager()
-    stop_cond = am.set_stopping_condition(problem_id, cond_id, body['bound'])
+    stop_cond = am.set_stopping_condition(problem_id, cond_id, body['bound'], body['applied'])
     return {"stopping_condition": stop_cond}
 
 
