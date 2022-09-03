@@ -13,6 +13,7 @@ class SiteData(db.Model):
     num_products = db.Column(db.Integer)
     num_production_lines = db.Column(db.Integer)
     individual_length = db.Column(db.Integer)
+    schedule_start_date = db.Column(db.Date)  # week of schedule
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -54,6 +55,13 @@ class Solution(db.Model):
     problem_id = db.Column(db.Integer, db.ForeignKey('problems.id'), nullable=False)
     problem = db.relationship('Problem')
 
-    best_solution = db.Column(db.JSON)
-    min_fitness = db.Column(db.JSON)
-    average_fitness = db.Column(db.JSON)
+    title = db.Column(db.Text)
+    solution = db.Column(db.JSON)
+    fitness = db.Column(db.Float)
+    product_line_utilization = db.Column(db.JSON)
+    forecast_achieved = db.Column(db.JSON)
+    raw_materials_usage = db.Column(db.JSON)
+    time_modified = db.Column(db.DateTime)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
