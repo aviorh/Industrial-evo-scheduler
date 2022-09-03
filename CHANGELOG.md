@@ -1,3 +1,10 @@
+## [03.09.2022, 14:25]
+
+### Added
+- added all endpoints for solution handling - save/edit/get by id/get all.
+- added SolutionAnalysis class to handle analysis.
+
+
 ## [22.08.2022, 22:05]
 
 ### Hotfix
