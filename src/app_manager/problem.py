@@ -56,7 +56,6 @@ class Problem:
         except IndexError:  # no current solution exist
             return []
 
-
     def get_fitness_logbook(self):
         # here we only read from logbook, so no need to worry about thread-safety
         return self.engine.logbook
