@@ -264,8 +264,9 @@ class AppManager(metaclass=SingletonMeta):
         db_problem, problem = self.get_problem_by_id(problem_id)
         progress = problem.engine.stopping_conditions_configuration
         for cond in progress.values():
-            if cond.applied and int(cond.progress) == 100:
+            if cond.applied and int(cond.progress) >= 100:
                 with db.auto_commit():
+                    problem.status = STATUS_FINISHED
                     db_problem.status = STATUS_FINISHED
                 break
         return progress
