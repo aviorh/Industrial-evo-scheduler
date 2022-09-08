@@ -6,7 +6,7 @@ import numpy as np
 from werkzeug.datastructures import FileStorage
 
 import src.utils.file_utils as file_utils
-from src.app_manager.consts import STOPPING_CONDITIONS
+from src.app_manager.consts import STOPPING_CONDITIONS, STATUS_FINISHED
 from src.app_manager.problem import Problem
 from src.app_manager.schedule_facade import SolutionSchedule
 from src.app_manager.solution_analysis import SolutionAnalysis
@@ -19,10 +19,7 @@ from src.database.database import db
 from src.database.models import SiteData as DBSiteData
 from src.database.models import Problem as DBProblem
 from src.database.models import Solution as DBSolution
-
-STATUS_PAUSED = 'paused'
-STATUS_IDLE = 'idle'
-STATUS_RUNNING = 'running'
+from src.app_manager.consts import STATUS_RUNNING, STATUS_PAUSED, STATUS_IDLE
 
 
 class AppManager(metaclass=SingletonMeta):
@@ -264,8 +261,15 @@ class AppManager(metaclass=SingletonMeta):
             db_problem.engine_data = tmp_data
 
     def get_progress(self, problem_id):
-        _, problem = self.get_problem_by_id(problem_id)
-        return problem.engine.stopping_conditions_configuration
+        db_problem, problem = self.get_problem_by_id(problem_id)
+        progress = problem.engine.stopping_conditions_configuration
+        for cond in progress.values():
+            if cond.applied and int(cond.progress) >= 100:
+                with db.auto_commit():
+                    problem.status = STATUS_FINISHED
+                    db_problem.status = STATUS_FINISHED
+                break
+        return progress
 
     def get_sites_data(self):
         return [site_data.as_dict() for site_data in DBSiteData.query.all()]

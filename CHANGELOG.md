@@ -4,6 +4,16 @@
 - added delete solution by id endpoint
 
 
+## [08.09.2022, 13:09]
+
+### Hotfix
+- get progress endpoints updates db if any condition reached 100%
+
+### Fixed
+- return analytics without % on to_dict()
+- moved somes consts to consts file
+
+
 ## [03.09.2022, 14:25]
 
 ### Fixed

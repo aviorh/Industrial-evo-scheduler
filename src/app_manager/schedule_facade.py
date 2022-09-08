@@ -77,9 +77,9 @@ class SolutionSchedule:
     def to_dict(self):
         return {
             "start_date": str(self.start_date),
-            "product_line_utilization": {key: f"{val} %" for key, val in self.product_line_utilization.items()},
-            "forecast_achieved": {key: f"{val} %" for key, val in self.forecast_achieved.items()},
-            "raw_materials_usage": {key: f"{val} %" for key, val in self.raw_materials_usage.items()},
+            "product_line_utilization": {key: f"{val}" for key, val in self.product_line_utilization.items()},
+            "forecast_achieved": {key: f"{val}" for key, val in self.forecast_achieved.items()},
+            "raw_materials_usage": {key: f"{val}" for key, val in self.raw_materials_usage.items()},
             "data": {key: [l.to_dict() for l in lst] for key, lst in self.data.items()}
         }
 
