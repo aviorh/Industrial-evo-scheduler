@@ -288,11 +288,12 @@ class AppManager(metaclass=SingletonMeta):
         _, problem = self.get_problem_by_id(problem_id)
         site_data = self.get_site_data_by_id(problem.site_data_id)
         current_solution = problem.get_current_best_solution()
-        formatted_solution = SolutionSchedule.create_from_raw(current_solution, site_data)
+        current_fitness = current_solution.fitness.values[0]
+        formatted_solution = SolutionSchedule.create_from_raw(current_solution, site_data, current_fitness)
 
         with db.auto_commit():
             db_solution = DBSolution(problem_id=problem_id, solution=formatted_solution.to_dict(), title=title,
-                                     fitness=current_solution.fitness.values[0], time_modified=datetime.now(),
+                                     fitness=current_fitness, time_modified=datetime.now(),
                                      raw_materials_usage=formatted_solution.raw_materials_usage,
                                      forecast_achieved=formatted_solution.forecast_achieved,
                                      product_line_utilization=formatted_solution.product_line_utilization)

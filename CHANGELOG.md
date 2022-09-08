@@ -1,3 +1,9 @@
+## [08.09.2022, 14:45]
+
+### Hotfix
+- return fitness attribute when using get current best solution endpoint
+
+
 ## [08.09.2022, 13:46]
 
 ### Added

@@ -47,6 +47,7 @@ class SolutionSchedule:
     product_line_utilization: Dict[int, float]  # line_id: util %
     forecast_achieved: Dict[int, float]  # product_id: produced / forecast %
     raw_materials_usage: Dict[str, float]  # material_name: % of material used
+    fitness: float
 
     @staticmethod
     def verify_conversion(raw, formatted, site_data):
@@ -66,17 +67,19 @@ class SolutionSchedule:
         return raw
 
     @classmethod
-    def create_from_raw(cls, raw: np.ndarray, site_data: SiteData):
+    def create_from_raw(cls, raw: np.ndarray, site_data: SiteData, fitness):
         start_date = cls._get_start_date(site_data)
         data = cls._create_schedule(raw, start_date, site_data)
         return cls(start_date=start_date, data=data,
                    product_line_utilization=SolutionAnalysis.get_product_lines_utilization(raw, site_data),
                    forecast_achieved=SolutionAnalysis.get_achieved_forecast(raw, site_data),
-                   raw_materials_usage=SolutionAnalysis.get_raw_materials_usage(raw, site_data))
+                   raw_materials_usage=SolutionAnalysis.get_raw_materials_usage(raw, site_data),
+                   fitness=fitness)
 
     def to_dict(self):
         return {
             "start_date": str(self.start_date),
+            "fitness": str(self.fitness),
             "product_line_utilization": {key: f"{val}" for key, val in self.product_line_utilization.items()},
             "forecast_achieved": {key: f"{val}" for key, val in self.forecast_achieved.items()},
             "raw_materials_usage": {key: f"{val}" for key, val in self.raw_materials_usage.items()},
