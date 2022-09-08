@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "af164106-7321-49cb-be42-f96a64825ffe",
-		"name": "final project collection",
+		"_postman_id": "f9c27aa5-1b57-4915-be22-bd38f0c6e018",
+		"name": "final project collection avior",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,7 +16,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Users/avior/Desktop/GIT/industrial-evo-scheduler/tests/files/site_data.json"
+							"src": "/C:/Users/shira/PycharmProjects/Industrial-evo-scheduler/tests/files/site_data.json"
 						}
 					]
 				},
@@ -29,58 +29,6 @@
 					"path": [
 						"api",
 						"site-data"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "get all site data",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"url": {
-					"raw": "localhost:9997/api/site-data",
-					"host": [
-						"localhost"
-					],
-					"port": "9997",
-					"path": [
-						"api",
-						"site-data"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "get all saved solutions",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"url": {
-					"raw": "localhost:9997/api/favorite-solution",
-					"host": [
-						"localhost"
-					],
-					"port": "9997",
-					"path": [
-						"api",
-						"favorite-solution"
 					]
 				}
 			},
@@ -121,7 +69,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"problem_id\": 1,\n    \"title\": \"RUN #16 results\" \n}",
+					"raw": "{\n    \"problem_id\": 1,\n    \"title\": \"Best Solution Run #11\" \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -157,6 +105,26 @@
 						"api",
 						"problems",
 						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete solution",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/favorite-solution/2",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"favorite-solution",
+						"2"
 					]
 				}
 			},
@@ -216,6 +184,25 @@
 					"path": [
 						"api",
 						"problem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all saved solutions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9997/api/favorite-solution",
+					"host": [
+						"localhost"
+					],
+					"port": "9997",
+					"path": [
+						"api",
+						"favorite-solution"
 					]
 				}
 			},
@@ -295,65 +282,6 @@
 						"problem",
 						"1",
 						"selection"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "edit solution",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"selection_id\": 0,\n    \"selection_parameters\": {\"tournsize\": 7}\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:9997/api/problem/1/selection",
-					"host": [
-						"localhost"
-					],
-					"port": "9997",
-					"path": [
-						"api",
-						"problem",
-						"1",
-						"selection"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "edit solution",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"solution_key\": \"solution_val\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:9997/api/favorite-solution/1",
-					"host": [
-						"localhost"
-					],
-					"port": "9997",
-					"path": [
-						"api",
-						"favorite-solution",
-						"1"
 					]
 				}
 			},

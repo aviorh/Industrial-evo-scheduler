@@ -319,16 +319,6 @@ def resume_ea(problem_id):
     return 'Problem calculation resumed'
 
 
-def update_current_ea_solution(problem_id):
-    """manually update solution
-    :param problem_id: Numeric ID to get problem
-    :type problem_id: int
-
-    :rtype: object
-    """
-    return 'do some magic!'
-
-
 def get_fitness_logbook(problem_id):
     """resume ea for this problem
     :param problem_id: Numeric ID to get problem
@@ -383,3 +373,13 @@ def update_favorite_solution_in_db(solution_id, body):
     am = AppManager()
     updated_db_solution = am.edit_saved_solution(solution_id, production_line, key, new_product_id, new_datetime)
     return updated_db_solution.as_dict()
+
+
+def delete_solution_from_db_by_id(solution_id):
+    am = AppManager()
+    res = am.delete_solution_from_db(solution_id)
+
+    if res:
+        return f"solution #{solution_id} deleted successfully"
+    else:
+        raise AssertionError(f"failed to delete solution #{solution_id}")

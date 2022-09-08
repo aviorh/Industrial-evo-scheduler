@@ -332,3 +332,9 @@ class AppManager(metaclass=SingletonMeta):
             db_solution.solution = new_solution
 
         return db_solution
+
+    def delete_solution_from_db(self, solution_id):
+        with db.auto_commit():
+            DBSolution.query.filter_by(id=solution_id).delete()
+
+        return True

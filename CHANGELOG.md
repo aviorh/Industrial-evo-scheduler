@@ -1,3 +1,9 @@
+## [08.09.2022, 13:46]
+
+### Added
+- added delete solution by id endpoint
+
+
 ## [03.09.2022, 14:25]
 
 ### Fixed

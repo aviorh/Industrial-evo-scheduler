@@ -615,4 +615,21 @@ paths:
               schema:
                 type: object
       x-codegen-request-body-name: body
-
+    delete:
+      summary: delete solution from db by id
+      operationId: src.api.api.delete_solution_from_db_by_id
+      parameters:
+        - in: path
+          name: solution_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID to identify solution
+      responses:
+        '200':
+          description: delete solution saved in db
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
